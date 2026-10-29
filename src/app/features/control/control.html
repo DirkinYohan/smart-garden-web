@@ -1,0 +1,200 @@
+<section class="page">
+  <h1 class="page-title">{{ i18n.t('ctrl.title') }}</h1>
+
+  @if (store.config().loading && !config()) {
+    <app-loading [rows]="6" [height]="40" />
+  } @else if (store.config().error && !config()) {
+    <app-error-state (retry)="store.reload()" />
+  } @else if (config(); as cfg) {
+    @if (saving()) {
+      <mat-progress-bar mode="indeterminate" [attr.aria-label]="i18n.t('ctrl.saving')" class="saving" />
+    }
+
+    <!-- Modo -->
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ i18n.t('ctrl.modeTitle') }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="modes" role="radiogroup" [attr.aria-label]="i18n.t('ctrl.modeGroup')">
+          @for (m of modes; track m.value) {
+            <button
+              type="button"
+              class="mode"
+              role="radio"
+              [attr.aria-checked]="cfg.mode === m.value"
+              [class.selected]="cfg.mode === m.value"
+              [disabled]="saving()"
+              (click)="setMode(m.value)"
+            >
+              <mat-icon aria-hidden="true">{{ modeIcons[m.value] }}</mat-icon>
+              <span class="mode-name">{{ modeLabel(m.value) }}</span>
+              <span class="mode-desc">{{ i18n.t(m.descriptionKey) }}</span>
+            </button>
+          }
+        </div>
+        <mat-slide-toggle
+          class="toggle"
+          [checked]="cfg.aiEnabled"
+          [disabled]="saving() || cfg.mode === 'AI'"
+          (change)="setAiEnabled($event.checked)"
+        >
+          {{ i18n.t('ctrl.aiAuto') }}
+        </mat-slide-toggle>
+      </mat-card-content>
+    </mat-card>
+
+    <div class="two-cols">
+      <!-- Cultivo -->
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ i18n.t('ctrl.cropTitle') }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content>
+          <mat-form-field appearance="outline" class="full">
+            <mat-label>{{ i18n.t('ctrl.cropLabel') }}</mat-label>
+            <mat-select [value]="cfg.cropId" (selectionChange)="setCrop($event.value)" [disabled]="saving()">
+              @for (c of crops(); track c.id) {
+                <mat-option [value]="c.id">{{ c.name }} · {{ c.minMoisture }}–{{ c.maxMoisture }} %</mat-option>
+              }
+            </mat-select>
+          </mat-form-field>
+          @if (cropById(cfg.cropId); as crop) {
+            <p class="crop-info">
+              <mat-icon aria-hidden="true">eco</mat-icon>
+              {{ i18n.t('ctrl.recommended') }} <strong>{{ crop.minMoisture }}–{{ crop.maxMoisture }} %</strong>
+            </p>
+            @if (crop.description) {
+              <p class="muted">{{ crop.description }}</p>
+            }
+            <p class="muted small">{{ i18n.t('ctrl.changeCropNote') }}</p>
+          }
+        </mat-card-content>
+      </mat-card>
+
+      <!-- Umbrales -->
+      <mat-card appearance="outlined">
+        <mat-card-header>
+          <mat-card-title>{{ i18n.t('ctrl.thresholdsTitle') }}</mat-card-title>
+        </mat-card-header>
+        <mat-card-content class="thresholds">
+          <p class="range-value" aria-live="polite" [class.pulse]="rangePulse()">
+            <span class="text-dry">{{ draftMin() }} %</span> – <span class="text-wet">{{ draftMax() }} %</span>
+          </p>
+          <mat-slider min="0" max="100" step="1" discrete class="full" [disabled]="isAi() || saving()">
+            <input
+              matSliderStartThumb
+              [attr.aria-label]="i18n.t('ctrl.minAria')"
+              [value]="draftMin()"
+              (valueChange)="onThresholdInput('min', $event)"
+            />
+            <input
+              matSliderEndThumb
+              [attr.aria-label]="i18n.t('ctrl.maxAria')"
+              [value]="draftMax()"
+              (valueChange)="onThresholdInput('max', $event)"
+            />
+          </mat-slider>
+          @if (cropRangeHint(); as hint) {
+            <p class="crop-range" [class.pulse]="rangePulse()" aria-live="polite">
+              <mat-icon aria-hidden="true">eco</mat-icon>{{ hint }}
+            </p>
+          }
+          @if (isAi()) {
+            <p class="note">
+              <mat-icon aria-hidden="true">psychology</mat-icon> {{ i18n.t('ctrl.aiAdjusts') }}
+            </p>
+          } @else if (gapInvalid()) {
+            <p class="error" role="alert">{{ i18n.t('ctrl.gapError') }}</p>
+          }
+          <mat-slide-toggle class="toggle" [checked]="cfg.rainPause" [disabled]="saving()" (change)="setRainPause($event.checked)">
+            {{ i18n.t('ctrl.rainPauseToggle') }}
+          </mat-slide-toggle>
+        </mat-card-content>
+        <mat-card-actions align="end">
+          <button mat-button type="button" (click)="resetThresholds()" [disabled]="!thresholdsDirty() || saving()">
+            {{ i18n.t('common.discard') }}
+          </button>
+          <button
+            mat-flat-button
+            type="button"
+            (click)="saveThresholds()"
+            [disabled]="isAi() || !thresholdsDirty() || gapInvalid() || saving()"
+          >
+            {{ i18n.t('ctrl.saveThresholds') }}
+          </button>
+        </mat-card-actions>
+      </mat-card>
+    </div>
+
+    <!-- Riego manual -->
+    <mat-card appearance="outlined" [class.disabled-card]="!isManual()">
+      <mat-card-header>
+        <mat-icon mat-card-avatar aria-hidden="true">water_drop</mat-icon>
+        <mat-card-title>{{ i18n.t('ctrl.manualTitle') }}</mat-card-title>
+        <mat-card-subtitle>{{ i18n.t(pumpOn() ? 'ctrl.pumpOn' : 'ctrl.pumpOff') }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (!isManual()) {
+          <p class="note">
+            <mat-icon aria-hidden="true">info</mat-icon> {{ i18n.t('ctrl.manualHint') }}
+          </p>
+        } @else {
+          <label class="duration-label" for="duration">{{ i18n.t('ctrl.duration', { seconds: duration() }) }}</label>
+          <mat-slider min="10" max="120" step="5" discrete class="full" [disabled]="remaining() > 0">
+            <input
+              matSliderThumb
+              id="duration"
+              [attr.aria-label]="i18n.t('ctrl.durationAria')"
+              [value]="duration()"
+              (valueChange)="duration.set($event)"
+            />
+          </mat-slider>
+          @if (remaining() > 0) {
+            <div class="countdown" role="timer" aria-live="polite">
+              <span>{{ i18n.t('ctrl.watering', { seconds: remaining() }) }}</span>
+              <mat-progress-bar mode="determinate" [value]="wateringProgress()" />
+            </div>
+          }
+        }
+      </mat-card-content>
+      @if (isManual()) {
+        <mat-card-actions>
+          <button mat-flat-button type="button" (click)="startWatering()" [disabled]="pumpBusy() || remaining() > 0">
+            <mat-icon>water_drop</mat-icon> {{ i18n.t('ctrl.waterNow') }}
+          </button>
+          <button mat-stroked-button type="button" (click)="stopWatering()" [disabled]="pumpBusy() || (!pumpOn() && remaining() === 0)">
+            <mat-icon>stop_circle</mat-icon> {{ i18n.t('ctrl.stop') }}
+          </button>
+        </mat-card-actions>
+      }
+    </mat-card>
+
+    <!-- Perfiles -->
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-card-title>{{ i18n.t('ctrl.profilesTitle') }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        <mat-list>
+          @for (c of crops(); track c.id) {
+            <mat-list-item>
+              <span matListItemTitle>{{ c.name }}</span>
+              <span matListItemLine>{{ c.minMoisture }}–{{ c.maxMoisture }} % · {{ c.description }}</span>
+              <button
+                mat-icon-button
+                matListItemMeta
+                type="button"
+                (click)="editCrop(c)"
+                [attr.aria-label]="i18n.t('ctrl.editProfile', { name: c.name })"
+                [matTooltip]="i18n.t('common.edit')"
+              >
+                <mat-icon>edit</mat-icon>
+              </button>
+            </mat-list-item>
+          }
+        </mat-list>
+      </mat-card-content>
+    </mat-card>
+  }
+</section>

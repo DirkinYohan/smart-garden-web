@@ -1,0 +1,190 @@
+.saving {
+  position: sticky;
+  top: 64px;
+  z-index: 2;
+}
+
+.modes {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+}
+
+.mode {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 14px;
+  text-align: left;
+  border-radius: 12px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface-container-low);
+  color: var(--mat-sys-on-surface);
+  font: inherit;
+  cursor: pointer;
+  transition: background 0.2s, border-color 0.2s;
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+  }
+
+  &:hover:not(:disabled) {
+    background: var(--mat-sys-surface-container-high);
+  }
+
+  &.selected {
+    border: 2px solid var(--mat-sys-primary);
+    background: var(--mat-sys-primary-container);
+    color: var(--mat-sys-on-primary-container);
+  }
+
+  &:disabled {
+    cursor: progress;
+  }
+}
+
+.mode-name {
+  font: var(--mat-sys-title-medium);
+}
+
+.mode-desc {
+  font: var(--mat-sys-body-small);
+}
+
+.toggle {
+  display: block;
+  margin-top: 16px;
+}
+
+.two-cols {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--sg-card-gap);
+}
+
+.full {
+  width: 100%;
+}
+
+.crop-info,
+.note {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.small {
+  font: var(--mat-sys-body-small);
+}
+
+.range-value {
+  font: var(--mat-sys-headline-small);
+  text-align: center;
+  margin: 0;
+  transition: color 0.3s ease;
+}
+
+/* Al cambiar de cultivo (o cuando la IA ajusta los umbrales) los sliders se deslizan hasta el rango nuevo. */
+.thresholds {
+  :host ::ng-deep .mdc-slider__thumb {
+    transition: left 320ms cubic-bezier(0.2, 0, 0, 1);
+  }
+
+  :host ::ng-deep .mdc-slider__track--active_fill {
+    transition:
+      left 320ms cubic-bezier(0.2, 0, 0, 1),
+      width 320ms cubic-bezier(0.2, 0, 0, 1);
+  }
+}
+
+/* "Rango recomendado para Tomate: 40–70 %" */
+.crop-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 4px 0 8px;
+  padding: 6px 12px;
+  border-radius: 999px;
+  font: var(--mat-sys-label-large);
+  color: var(--mat-sys-on-primary-container);
+  background: var(--mat-sys-primary-container);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+
+  &.pulse {
+    animation: range-pulse 1.2s ease;
+  }
+}
+
+.range-value.pulse {
+  animation: range-pulse 1.2s ease;
+}
+
+@keyframes range-pulse {
+  0% {
+    scale: 0.96;
+    box-shadow: 0 0 0 0 color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+  }
+  45% {
+    scale: 1.03;
+    box-shadow: 0 0 0 6px transparent;
+  }
+  100% {
+    scale: 1;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .crop-range.pulse,
+  .range-value.pulse {
+    animation: none;
+  }
+
+  .thresholds :host ::ng-deep .mdc-slider__thumb,
+  .thresholds :host ::ng-deep .mdc-slider__track--active_fill {
+    transition: none;
+  }
+}
+
+.error {
+  color: var(--mat-sys-error);
+  margin: 0;
+}
+
+.duration-label {
+  display: block;
+  margin-top: 8px;
+}
+
+.countdown {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  color: var(--sg-wet);
+}
+
+.disabled-card {
+  opacity: 0.85;
+}
+
+mat-card-actions button mat-icon {
+  margin-right: 4px;
+}
+
+@media (max-width: 839px) {
+  .modes,
+  .two-cols {
+    grid-template-columns: 1fr;
+  }
+}
