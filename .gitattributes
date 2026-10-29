@@ -1,0 +1,5 @@
+# Normaliza finales de línea: el proyecto se desarrolla en Windows y se compila en Linux.
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.ico binary
+*.png binary
