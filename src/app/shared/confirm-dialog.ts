@@ -1,0 +1,31 @@
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
+import { MatButtonModule } from '@angular/material/button';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+import { I18nService } from '../core/i18n/i18n.service';
+
+export interface ConfirmDialogData {
+  title: string;
+  message: string;
+  confirmText?: string;
+}
+
+/** Generic confirmation dialog; closes with `true` when confirmed. */
+@Component({
+  changeDetection: ChangeDetectionStrategy.OnPush,
+  selector: 'app-confirm-dialog',
+  imports: [MatDialogModule, MatButtonModule],
+  template: `
+    <h2 mat-dialog-title>{{ data.title }}</h2>
+    <mat-dialog-content>{{ data.message }}</mat-dialog-content>
+    <mat-dialog-actions align="end">
+      <button mat-button type="button" [mat-dialog-close]="false">{{ i18n.t('common.cancel') }}</button>
+      <button mat-flat-button type="button" [mat-dialog-close]="true" cdkFocusInitial>
+        {{ data.confirmText ?? i18n.t('common.confirm') }}
+      </button>
+    </mat-dialog-actions>
+  `,
+})
+export class ConfirmDialog {
+  protected readonly data = inject<ConfirmDialogData>(MAT_DIALOG_DATA);
+  protected readonly i18n = inject(I18nService);
+}
