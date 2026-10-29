@@ -1,1 +1,133 @@
-/* You can add global styles to this file, and also import other style files */
+@use '@angular/material' as mat;
+
+// Material 3 theme: green (garden) primary, teal tertiary. `color-scheme` switches light / dark.
+html {
+  height: 100%;
+  color-scheme: light;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$green-palette,
+        tertiary: mat.$cyan-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+
+  // App tokens (moisture states, risk levels)
+  --sg-dry: #c62828;
+  --sg-ok: #2e7d32;
+  --sg-wet: #1565c0;
+  --sg-saturated: #0d47a1;
+  --sg-warn: #b26a00;
+  --sg-card-gap: 16px;
+}
+
+html.dark-theme {
+  color-scheme: dark;
+  --sg-dry: #ef9a9a;
+  --sg-ok: #81c784;
+  --sg-wet: #90caf9;
+  --sg-saturated: #64b5f6;
+  --sg-warn: #ffcc80;
+}
+
+body {
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+h1,
+h2,
+h3 {
+  margin: 0;
+}
+
+.page {
+  padding: 16px;
+  max-width: 1200px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: var(--sg-card-gap);
+}
+
+.page-title {
+  font: var(--mat-sys-headline-small);
+  margin: 4px 0;
+}
+
+.card-grid {
+  display: grid;
+  gap: var(--sg-card-gap);
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+}
+
+.muted {
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.text-dry {
+  color: var(--sg-dry);
+}
+.text-ok {
+  color: var(--sg-ok);
+}
+.text-wet {
+  color: var(--sg-wet);
+}
+
+// Skeleton loading placeholder
+.skeleton {
+  border-radius: 8px;
+  background: linear-gradient(
+    90deg,
+    var(--mat-sys-surface-container) 25%,
+    var(--mat-sys-surface-container-highest) 50%,
+    var(--mat-sys-surface-container) 75%
+  );
+  background-size: 200% 100%;
+  animation: sg-shimmer 1.4s infinite linear;
+}
+
+@keyframes sg-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+  }
+}
+
+// Snackbars
+.mat-mdc-snack-bar-container.snack-error {
+  --mat-snack-bar-container-color: var(--mat-sys-error-container);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-error-container);
+  --mat-snack-bar-button-color: var(--mat-sys-on-error-container);
+}
+
+.mat-mdc-snack-bar-container.snack-success {
+  --mat-snack-bar-container-color: var(--mat-sys-primary-container);
+  --mat-snack-bar-supporting-text-color: var(--mat-sys-on-primary-container);
+  --mat-snack-bar-button-color: var(--mat-sys-on-primary-container);
+}
+
+// Visible keyboard focus
+:focus-visible {
+  outline: 2px solid var(--mat-sys-primary);
+  outline-offset: 2px;
+}
