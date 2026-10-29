@@ -1,0 +1,100 @@
+.card {
+  min-width: 0;
+  padding: 16px;
+  border-radius: 16px;
+  border: 1px solid var(--mat-sys-outline-variant);
+  background: var(--mat-sys-surface);
+
+  h2 {
+    font: var(--mat-sys-title-large);
+  }
+}
+
+.subtitle {
+  margin: 2px 0 12px;
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.status-skeleton {
+  height: 220px;
+  border-radius: 16px;
+}
+
+/* Aviso "Actualizando análisis para Tomate…" mientras llega el análisis del cultivo nuevo. */
+.card.updating {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  border-style: dashed;
+  border-color: color-mix(in srgb, var(--mat-sys-primary) 45%, transparent);
+  background: color-mix(in srgb, var(--mat-sys-primary) 6%, var(--mat-sys-surface));
+
+  .headline {
+    margin: 0;
+    font: var(--mat-sys-title-medium);
+  }
+
+  .muted {
+    margin: 4px 0 8px;
+  }
+
+  button mat-icon {
+    margin-right: 4px;
+  }
+
+  .small {
+    font: var(--mat-sys-body-small);
+  }
+}
+
+.chart-skeleton {
+  height: 340px;
+}
+
+.rain-skeleton {
+  height: 240px;
+}
+
+.inline-error {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  margin: 0 0 8px;
+  color: var(--mat-sys-error);
+}
+
+.recs {
+  display: grid;
+  gap: 12px;
+  margin-top: 12px;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 320px), 1fr));
+}
+
+.plain-recs {
+  margin: 12px 0 0;
+  padding-left: 20px;
+}
+
+.why mat-panel-title {
+  display: flex;
+  align-items: center;
+  font: var(--mat-sys-title-medium);
+}
+
+.note {
+  margin: 12px 0 0;
+  font: var(--mat-sys-body-small);
+}
+
+.two-cols {
+  display: grid;
+  gap: var(--sg-card-gap);
+  grid-template-columns: 1fr 1fr;
+}
+
+@media (max-width: 1099px) {
+  .two-cols {
+    grid-template-columns: 1fr;
+  }
+}

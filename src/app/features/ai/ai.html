@@ -1,0 +1,143 @@
+<section class="page">
+  <h1 class="page-title">{{ i18n.t('ai.title') }}</h1>
+
+  @let slice = store.latestAnalysis();
+  @if (slice.loading && !latest()) {
+    <div class="skeleton status-skeleton" role="status" [attr.aria-label]="i18n.t('ai.loadingAnalysis')"></div>
+  } @else if (slice.error && !latest()) {
+    <app-error-state [message]="i18n.t('ai.loadError')" (retry)="store.reload()" />
+  } @else if (latest(); as a) {
+    @if (updatingAnalysis()) {
+      <!-- El análisis es de otro cultivo: aviso en lugar del texto viejo -->
+      <app-updating-analysis
+        [cropName]="cropName()"
+        [autoAnalysis]="autoAnalysis()"
+        [analyzing]="analyzing()"
+        (analyze)="analyze()"
+      />
+    } @else {
+      <!-- A. Estado de tu huerta -->
+      <app-ai-status-card
+        [analysis]="a"
+        [now]="nowMinute()"
+        [analyzing]="analyzing()"
+        [flash]="flash()"
+        [liveMoisture]="liveMoisture()"
+        [liveSensorOk]="liveSensorOk()"
+        (analyze)="analyze()"
+      />
+    }
+
+    <!-- B. Indicadores clave -->
+    <app-ai-kpi-row
+    [analysis]="a"
+    [liveMoisture]="liveMoisture()"
+    [sensorOk]="store.status().value?.sensorOk ?? true"
+    [weather]="store.weather().value"
+    [now]="nowMinute()"
+  />
+
+    <!-- C. Humedad: pasado y pronóstico -->
+    <article class="card">
+      <h2>{{ i18n.t('ai.whenTitle') }}</h2>
+      <p class="subtitle">{{ i18n.t('ai.whenSubtitle') }}</p>
+      @if (history24h().state === 'loading' && !history24h().data.length) {
+        <div class="skeleton chart-skeleton" role="status" [attr.aria-label]="i18n.t('ai.loadingChart')"></div>
+      } @else {
+        @if (history24h().state === 'error') {
+          <p class="inline-error" role="alert">
+            <mat-icon aria-hidden="true">cloud_off</mat-icon> {{ i18n.t('ai.chartError') }}
+            <button mat-button type="button" (click)="loadHistory()">Reintentar</button>
+          </p>
+        }
+        <app-ai-forecast-chart [analysis]="a" [history]="history24h().data" [weather]="store.weather().value" [now]="nowMinute()" />
+      }
+    </article>
+
+    <!-- D. Recomendaciones -->
+    <article class="card">
+      <h2>{{ i18n.t('ai.recsTitle') }}</h2>
+      @if (updatingAnalysis()) {
+        <p class="muted">
+          {{ i18n.t('ai.recsPending', { crop: cropName() ?? '' }) }}
+        </p>
+      } @else if (details().length) {
+        <div class="recs">
+          @for (d of details(); track $index) {
+            <app-recommendation-card [detail]="d" [busy]="busyAction() === d" (act)="runAction($event)" />
+          }
+        </div>
+      } @else if (a.recommendations.length) {
+        <ul class="plain-recs">
+          @for (r of a.recommendations; track $index) {
+            <li>{{ r }}</li>
+          }
+        </ul>
+      } @else {
+        <app-empty-state [message]="i18n.t('ai.noRecs')" icon="tips_and_updates" />
+      }
+    </article>
+
+    <!-- E. ¿Por qué la IA decidió esto? -->
+    <mat-accordion>
+      <mat-expansion-panel class="why">
+        <mat-expansion-panel-header>
+          <mat-panel-title>
+            <mat-icon aria-hidden="true">help</mat-icon>&nbsp;{{ i18n.t('ai.whyTitle') }}
+          </mat-panel-title>
+        </mat-expansion-panel-header>
+        @if (a.inputSnapshot; as s) {
+          <app-why-factors [snapshot]="s" [recommendedMin]="a.recommendedMin" />
+          <p class="muted note">{{ i18n.t('ai.whyNote') }}</p>
+        } @else {
+          <app-empty-state [message]="i18n.t('ai.whyEmpty')" icon="info" />
+        }
+      </mat-expansion-panel>
+    </mat-accordion>
+  } @else {
+    <article class="card empty">
+      <app-empty-state [message]="i18n.t('ai.firstAnalysis')" icon="psychology_alt">
+        <button mat-flat-button type="button" (click)="analyze()" [disabled]="analyzing()">
+          <mat-icon>auto_awesome</mat-icon> Analizar ahora
+        </button>
+      </app-empty-state>
+    </article>
+  }
+
+  <!-- F. Tendencias -->
+  <article class="card">
+    <app-ai-trends [stats]="stats()" [days]="statsDays()" (daysChange)="statsDays.set($event)" (retry)="loadStats(statsDays())" />
+  </article>
+
+  <div class="two-cols">
+    <!-- G. Pronóstico de lluvia y temperatura -->
+    <article class="card">
+      <h2>{{ i18n.t('ai.rainTitle') }}</h2>
+      <p class="subtitle">{{ i18n.t('ai.rainSubtitle') }}</p>
+      @let weather = store.weather();
+      @if (weather.loading && !weather.value) {
+        <div class="skeleton rain-skeleton" role="status" [attr.aria-label]="i18n.t('ai.loadingRain')"></div>
+      } @else if (weather.error && !weather.value) {
+        <app-error-state [message]="i18n.t('ai.weatherError')" (retry)="store.loadWeather()" />
+      } @else if (weather.value; as w) {
+        <app-ai-rain-chart [weather]="w" />
+      } @else {
+        <app-empty-state [message]="i18n.t('ai.noWeather')" icon="cloud_off" />
+      }
+    </article>
+
+    <!-- H. Historial de análisis -->
+    <article class="card">
+      <h2>{{ i18n.t('ai.historyTitle') }}</h2>
+      @if (list().state === 'loading' && timeline().length === 0) {
+        <app-loading [rows]="5" [height]="36" />
+      } @else if (list().state === 'error' && timeline().length === 0) {
+        <app-error-state (retry)="loadList()" />
+      } @else if (timeline().length === 0) {
+        <app-empty-state [message]="i18n.t('ai.noAnalyses')" icon="history" />
+      } @else {
+        <app-analysis-timeline [analyses]="timeline()" (open)="openAnalysis($event)" />
+      }
+    </article>
+  </div>
+</section>
