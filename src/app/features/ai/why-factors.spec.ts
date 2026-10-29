@@ -3,7 +3,9 @@ import { localHourTicks } from './forecast-chart';
 import { I18nService } from '../../core/i18n/i18n.service';
 import { factorsFor } from './why-factors';
 
-/** El servicio sin DI: solo necesita localStorage/document, que existen en jsdom. */
+/** El servicio sin DI: solo necesita localStorage/document, que existen en jsdom. El idioma debe ser el de
+ * defecto aunque otra prueba haya cambiado la preferencia antes de cargar este archivo. */
+localStorage.clear();
 const i18n = new I18nService();
 const localized = (snapshot: InputSnapshot, recommendedMin: number) =>
   factorsFor(snapshot, recommendedMin, i18n);
