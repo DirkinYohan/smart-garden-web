@@ -1,0 +1,77 @@
+<main class="login">
+  <div class="lang-corner">
+    <app-language-toggle />
+  </div>
+  <mat-card class="card" appearance="outlined">
+    <div class="header">
+      <mat-icon class="logo" aria-hidden="true">yard</mat-icon>
+      <h1>{{ i18n.t('login.title') }}</h1>
+      <p class="muted">{{ i18n.t('login.subtitle') }}</p>
+    </div>
+
+    @if (reason() === 'expired') {
+      <p class="notice" role="alert">{{ i18n.t('login.expired') }}</p>
+    }
+
+    @if (failure(); as error) {
+      <p class="notice error-notice" role="alert">
+        <mat-icon aria-hidden="true">error</mat-icon>
+        {{ error }}
+      </p>
+    }
+
+    <form [formGroup]="form" (ngSubmit)="submit()" novalidate>
+      <mat-form-field appearance="outline">
+        <mat-label>{{ i18n.t('login.username') }}</mat-label>
+        <input matInput formControlName="username" autocomplete="username" required />
+        <mat-icon matPrefix aria-hidden="true">person</mat-icon>
+        @if (form.controls.username.hasError('required')) {
+          <mat-error>{{ i18n.t('login.usernameRequired') }}</mat-error>
+        } @else if (form.controls.username.hasError('maxlength')) {
+          <mat-error>{{ i18n.t('login.usernameMax') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>{{ i18n.t('login.password') }}</mat-label>
+        <input
+          matInput
+          formControlName="password"
+          [type]="hidePassword() ? 'password' : 'text'"
+          autocomplete="current-password"
+          required
+        />
+        <mat-icon matPrefix aria-hidden="true">lock</mat-icon>
+        <button
+          mat-icon-button
+          matSuffix
+          type="button"
+          (click)="hidePassword.set(!hidePassword())"
+          [attr.aria-label]="hidePassword() ? i18n.t('login.showPassword') : i18n.t('login.hidePassword')"
+          [attr.aria-pressed]="!hidePassword()"
+        >
+          <mat-icon>{{ hidePassword() ? 'visibility' : 'visibility_off' }}</mat-icon>
+        </button>
+        @if (form.controls.password.hasError('required')) {
+          <mat-error>{{ i18n.t('login.passwordRequired') }}</mat-error>
+        } @else if (form.controls.password.hasError('minlength')) {
+          <mat-error>{{ i18n.t('login.passwordMin') }}</mat-error>
+        }
+      </mat-form-field>
+
+      <button mat-flat-button type="submit" [disabled]="!canSubmit()">
+        @if (submitting()) {
+          <mat-progress-spinner diameter="20" mode="indeterminate" [attr.aria-label]="i18n.t('login.submitting')" />
+        } @else if (cooldown() > 0) {
+          {{ i18n.t('login.cooldown', { seconds: cooldown() }) }}
+        } @else {
+          {{ i18n.t('login.submit') }}
+        }
+      </button>
+    </form>
+
+    @if (mock) {
+      <p class="hint muted">{{ i18n.t('login.demoHint', { user: 'admin', password: 'admin123' }) }}</p>
+    }
+  </mat-card>
+</main>

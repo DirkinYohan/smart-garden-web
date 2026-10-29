@@ -1,0 +1,79 @@
+.login {
+  position: relative;
+  min-height: 100dvh;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: radial-gradient(circle at top, var(--mat-sys-primary-container), var(--mat-sys-surface) 60%);
+}
+
+/* Botón de idioma en la esquina, fuera de la tarjeta */
+.lang-corner {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+}
+
+.card {
+  width: min(400px, 100%);
+  padding: 24px;
+}
+
+.header {
+  text-align: center;
+  margin-bottom: 16px;
+
+  h1 {
+    font: var(--mat-sys-headline-medium);
+  }
+}
+
+.logo {
+  font-size: 48px;
+  width: 48px;
+  height: 48px;
+  color: var(--mat-sys-primary);
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+button[type='submit'] {
+  height: 48px;
+  margin-top: 8px;
+}
+
+mat-progress-spinner {
+  margin: 0 auto;
+}
+
+.notice {
+  padding: 8px 12px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.error-notice {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  font: var(--mat-sys-body-small);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+  }
+}
+
+.hint {
+  margin-top: 16px;
+  text-align: center;
+  font: var(--mat-sys-body-small);
+}
