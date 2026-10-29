@@ -1,0 +1,81 @@
+<a class="skip-link" href="#main-content">{{ i18n.t('nav.skip') }}</a>
+
+<mat-toolbar class="toolbar">
+  <mat-icon class="logo" aria-hidden="true">yard</mat-icon>
+  <span class="brand">Smart Garden</span>
+  @if (mock) {
+    <span class="mock-badge" [matTooltip]="i18n.t('toolbar.demo')">DEMO</span>
+  }
+  <span class="spacer"></span>
+  <app-connection-indicator [state]="store.connection()" />
+  <app-language-toggle />
+  <button
+    mat-icon-button
+    (click)="theme.toggle()"
+    [attr.aria-label]="theme.dark() ? i18n.t('toolbar.lightTheme') : i18n.t('toolbar.darkTheme')"
+    [matTooltip]="theme.dark() ? i18n.t('toolbar.light') : i18n.t('toolbar.dark')"
+  >
+    <mat-icon>{{ theme.dark() ? 'light_mode' : 'dark_mode' }}</mat-icon>
+  </button>
+  <button
+    mat-button
+    class="user-menu"
+    [matMenuTriggerFor]="userMenu"
+    [attr.aria-label]="i18n.t('toolbar.userMenu', { user: auth.username() })"
+  >
+    <mat-icon aria-hidden="true">account_circle</mat-icon>
+    <span class="user-name">{{ auth.username() }}</span>
+  </button>
+  <mat-menu #userMenu="matMenu">
+    <button mat-menu-item routerLink="/cambiar-contrasena">
+      <mat-icon aria-hidden="true">password</mat-icon>
+      <span>{{ i18n.t('toolbar.changePassword') }}</span>
+    </button>
+    <button mat-menu-item (click)="logout()">
+      <mat-icon aria-hidden="true">logout</mat-icon>
+      <span>{{ i18n.t('toolbar.logout') }}</span>
+    </button>
+  </mat-menu>
+</mat-toolbar>
+
+<mat-sidenav-container class="container">
+  @if (!isMobile()) {
+    <mat-sidenav mode="side" opened class="sidenav">
+      <nav [attr.aria-label]="i18n.t('nav.main')">
+        <mat-nav-list>
+          @for (item of nav; track item.path) {
+            <a
+              mat-list-item
+              [routerLink]="item.path"
+              routerLinkActive
+              #rla="routerLinkActive"
+              [routerLinkActiveOptions]="{ exact: item.path === '/' }"
+              [activated]="rla.isActive"
+              [attr.aria-current]="rla.isActive ? 'page' : null"
+            >
+              <mat-icon matListItemIcon aria-hidden="true">{{ item.icon }}</mat-icon>
+              <span matListItemTitle>{{ i18n.t(item.labelKey) }}</span>
+            </a>
+          }
+        </mat-nav-list>
+        <p class="user muted">{{ i18n.t('toolbar.session', { user: auth.username() }) }}</p>
+      </nav>
+    </mat-sidenav>
+  }
+  <mat-sidenav-content>
+    <main id="main-content" tabindex="-1" [class.with-bottom-nav]="isMobile()">
+      <router-outlet />
+    </main>
+  </mat-sidenav-content>
+</mat-sidenav-container>
+
+@if (isMobile()) {
+  <nav class="bottom-nav" [attr.aria-label]="i18n.t('nav.main')">
+    @for (item of nav; track item.path) {
+      <a [routerLink]="item.path" routerLinkActive="active">
+        <mat-icon aria-hidden="true">{{ item.icon }}</mat-icon>
+        <span>{{ i18n.t(item.labelKey) }}</span>
+      </a>
+    }
+  </nav>
+}
