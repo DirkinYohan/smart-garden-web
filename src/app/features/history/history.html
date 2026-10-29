@@ -1,0 +1,98 @@
+<section class="page">
+  <h1 class="page-title">Historial</h1>
+
+  <mat-card appearance="outlined">
+    <mat-card-header class="chart-header">
+      <mat-card-title>Humedad del suelo</mat-card-title>
+      <mat-button-toggle-group
+        [value]="range()"
+        (change)="range.set($event.value)"
+        [attr.aria-label]="i18n.t('hist.timeRange')"
+        hideSingleSelectionIndicator
+      >
+        @for (r of ranges; track r.value) {
+          <mat-button-toggle [value]="r.value">{{ r.label }}</mat-button-toggle>
+        }
+      </mat-button-toggle-group>
+    </mat-card-header>
+    <mat-card-content>
+      @switch (history().state) {
+        @case ('loading') {
+          <div class="skeleton chart-skeleton" role="status" [attr.aria-label]="i18n.t('ai.loadingChart')"></div>
+        }
+        @case ('error') {
+          <app-error-state (retry)="loadHistory()" />
+        }
+        @default {
+          @if (chartData(); as data) {
+            <div class="chart" role="img" [attr.aria-label]="i18n.t('hist.chartAria', { range: range() })">
+              <canvas baseChart type="line" [data]="data" [options]="chartOptions()"></canvas>
+            </div>
+            <p class="muted legend-note">{{ i18n.t('hist.bandNote') }}</p>
+          } @else {
+            <app-empty-state />
+          }
+        }
+      }
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card appearance="outlined">
+    <mat-card-header>
+      <mat-card-title>{{ i18n.t('hist.eventsTitle') }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @switch (events().state) {
+        @case ('loading') {
+          <app-loading [rows]="5" [height]="32" />
+        }
+        @case ('error') {
+          <app-error-state (retry)="loadEvents()" />
+        }
+        @default {
+          @if (dataSource.data.length === 0) {
+            <app-empty-state [message]="i18n.t('hist.noEvents')" icon="water_drop" />
+          }
+        }
+      }
+      <div class="table-wrap" [hidden]="events().state !== 'ready' || dataSource.data.length === 0">
+        <table mat-table [dataSource]="dataSource">
+          <ng-container matColumnDef="startedAt">
+            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <td mat-cell *matCellDef="let e">{{ e.startedAt | date: 'medium' }}</td>
+          </ng-container>
+          <ng-container matColumnDef="duration">
+            <th mat-header-cell *matHeaderCellDef>{{ i18n.t('hist.duration') }}</th>
+            <td mat-cell *matCellDef="let e">
+              @if (e.inProgress) {
+                <span class="text-wet">Regando…</span>
+              } @else {
+                {{ duration(e.durationSec) }}
+              }
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="moisture">
+            <th mat-header-cell *matHeaderCellDef>Humedad</th>
+            <td mat-cell *matCellDef="let e">
+              {{ e.moistureStart }} %
+              <span aria-label="a">→</span>
+              {{ e.moistureEnd !== null ? e.moistureEnd + ' %' : '…' }}
+            </td>
+          </ng-container>
+          <ng-container matColumnDef="mode">
+            <th mat-header-cell *matHeaderCellDef>Modo</th>
+            <td mat-cell *matCellDef="let e">{{ modeLabel(e.mode) }}</td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="columns"></tr>
+          <tr mat-row *matRowDef="let row; columns: columns"></tr>
+        </table>
+      </div>
+      <mat-paginator
+        [hidden]="events().state !== 'ready' || dataSource.data.length === 0"
+        [pageSizeOptions]="[10, 20, 50]"
+        [pageSize]="10"
+        [attr.aria-label]="i18n.t('hist.pagination')"
+      />
+    </mat-card-content>
+  </mat-card>
+</section>
