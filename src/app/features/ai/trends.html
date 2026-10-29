@@ -1,0 +1,76 @@
+<section class="trends" aria-labelledby="trends-title">
+  <header class="head">
+    <h2 id="trends-title">¿Cómo le ha ido a tu huerta?</h2>
+    <mat-button-toggle-group
+      [value]="days()"
+      (change)="daysChange.emit($event.value)"
+      aria-label="Periodo de las tendencias"
+      hideSingleSelectionIndicator
+    >
+      <mat-button-toggle [value]="7">7 días</mat-button-toggle>
+      <mat-button-toggle [value]="30">30 días</mat-button-toggle>
+    </mat-button-toggle-group>
+  </header>
+
+  @switch (stats().state) {
+    @case ('loading') {
+      <div class="tiles">
+        @for (i of [1, 2, 3, 4]; track i) {
+          <div class="skeleton tile-skeleton"></div>
+        }
+      </div>
+      <app-loading [rows]="3" [height]="60" />
+    }
+    @case ('error') {
+      <app-error-state message="No se pudieron cargar las tendencias" (retry)="retry.emit()" />
+    }
+    @default {
+      @if (tiles(); as t) {
+        <div class="tiles">
+          <app-stat-tile icon="psychology" label="Análisis realizados" [value]="t.analyses" [sub]="'Últimos ' + days() + ' días'" />
+          <app-stat-tile icon="auto_awesome" label="Hechos por Gemini" [value]="t.gemini" [sub]="t.geminiSub" tone="water" />
+          <app-stat-tile icon="rainy" label="Pausas por lluvia" [value]="t.rainPauses" sub="Análisis que recomendaron pausar" tone="water" />
+          <app-stat-tile icon="water_drop" label="Minutos de bomba" [value]="t.pump" [sub]="t.pumpSub" />
+        </div>
+
+        <div class="charts">
+          <article class="panel wide">
+            <h3>¿Cómo estuvo la humedad cada día?</h3>
+            @if (hasDaily()) {
+              <div class="chart" role="img" [attr.aria-label]="'Humedad diaria y riegos. ' + dailyReading()">
+                <canvas baseChart type="line" [data]="dailyData()" [options]="dailyOptions()"></canvas>
+              </div>
+              <p class="reading">{{ dailyReading() }}</p>
+            } @else {
+              <app-empty-state message="Sin datos suficientes de humedad en este periodo" icon="show_chart" />
+            }
+          </article>
+
+          <article class="panel">
+            <h3>¿Cuánto tiempo estuvo bien la huerta?</h3>
+            @if (healthTotal() > 0) {
+              <div class="chart donut" role="img" [attr.aria-label]="healthReading()">
+                <canvas baseChart type="doughnut" [data]="donutData()" [options]="donutOptions()" [plugins]="donutPlugins"></canvas>
+              </div>
+              <p class="reading">{{ healthReading() }}</p>
+            } @else {
+              <app-empty-state message="Sin datos suficientes: los análisis anteriores no tienen estado" icon="donut_large" />
+            }
+          </article>
+
+          <article class="panel wide">
+            <h3>¿Cómo cambiaron los umbrales recomendados?</h3>
+            @if (thresholdData().datasets[0].data.length > 1) {
+              <div class="chart" role="img" [attr.aria-label]="'Umbrales recomendados en el tiempo. ' + thresholdReading()">
+                <canvas baseChart type="line" [data]="thresholdData()" [options]="thresholdOptions()"></canvas>
+              </div>
+              <p class="reading">{{ thresholdReading() }}</p>
+            } @else {
+              <app-empty-state message="Sin datos suficientes de análisis en este periodo" icon="tune" />
+            }
+          </article>
+        </div>
+      }
+    }
+  }
+</section>
