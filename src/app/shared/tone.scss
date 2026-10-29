@@ -1,0 +1,36 @@
+// Meaningful colors shared by the AI widgets (always used together with an icon + text).
+.tone-good {
+  --tone: var(--sg-ok);
+}
+.tone-warn {
+  --tone: var(--sg-warn);
+}
+.tone-bad {
+  --tone: var(--sg-dry);
+}
+.tone-water {
+  --tone: var(--sg-wet);
+}
+.tone-neutral {
+  --tone: var(--mat-sys-on-surface-variant);
+}
+.tone-deep {
+  --tone: var(--sg-saturated);
+}
+
+.tone-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font: var(--mat-sys-label-large);
+  color: var(--tone);
+  background: color-mix(in srgb, var(--tone) 16%, transparent);
+
+  mat-icon {
+    font-size: 18px;
+    width: 18px;
+    height: 18px;
+  }
+}
