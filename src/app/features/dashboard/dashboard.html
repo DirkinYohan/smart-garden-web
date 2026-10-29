@@ -1,0 +1,170 @@
+<section class="page">
+  <h1 class="page-title">{{ i18n.t('dash.title') }}</h1>
+
+  <div class="top">
+    <!-- Medidor de humedad -->
+    <mat-card appearance="outlined" class="gauge-card">
+      <mat-card-header>
+        <mat-card-title>{{ i18n.t('dash.moisture') }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (store.status().loading && !status()) {
+          <div class="skeleton gauge-skeleton" role="status" [attr.aria-label]="i18n.t('common.loading')"></div>
+        } @else if (store.status().error && !status()) {
+          <app-error-state (retry)="store.reload()" />
+        } @else if (!status()?.hasReading) {
+          <app-empty-state />
+        } @else {
+          <app-moisture-gauge
+            [value]="status()!.moisture"
+            [min]="thresholds().min"
+            [max]="thresholds().max"
+            [sensorOk]="status()!.sensorOk"
+          />
+          @if (!status()!.sensorOk) {
+            <p class="alert" role="alert">
+              <mat-icon aria-hidden="true">warning</mat-icon> {{ i18n.t('dash.sensorWarning') }}
+            </p>
+          }
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <div class="status-grid">
+      <mat-card appearance="outlined" class="mini">
+        <mat-icon class="mini-icon pump" [class.watering]="status()?.pumpOn" aria-hidden="true">water_drop</mat-icon>
+        <div>
+          <p class="mini-label">{{ i18n.t('dash.pump') }}</p>
+          <p class="mini-value">
+            @if (status()?.pumpOn) {
+              <span class="text-wet">{{ i18n.t('dash.pumpOn') }}</span>
+            } @else {
+              {{ i18n.t('dash.pumpOff') }}
+            }
+          </p>
+        </div>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="mini">
+        <mat-icon class="mini-icon" [class.text-ok]="store.deviceOnline()" [class.text-dry]="!store.deviceOnline()" aria-hidden="true">
+          {{ store.deviceOnline() ? 'sensors' : 'sensors_off' }}
+        </mat-icon>
+        <div>
+          <p class="mini-label">{{ i18n.t('dash.device') }}</p>
+          <p class="mini-value">{{ i18n.t(store.deviceOnline() ? 'dash.online' : 'dash.offline') }}</p>
+          <p class="mini-sub muted">{{ i18n.t('dash.lastReading', { when: lastReading() }) }}</p>
+        </div>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="mini">
+        @let mode = store.config().value?.mode ?? status()?.mode;
+        <mat-icon class="mini-icon" aria-hidden="true">{{ mode ? modeIcons[mode] : 'help' }}</mat-icon>
+        <div>
+          <p class="mini-label">{{ i18n.t('dash.mode') }}</p>
+          <p class="mini-value">{{ mode ? modeLabel(mode) : '—' }}</p>
+          @if (status()?.rainPause) {
+            <p class="mini-sub muted">{{ i18n.t('dash.rainPauseActive') }}</p>
+          }
+        </div>
+      </mat-card>
+
+      <mat-card appearance="outlined" class="mini">
+        <mat-icon class="mini-icon" aria-hidden="true">potted_plant</mat-icon>
+        <div>
+          <p class="mini-label">{{ i18n.t('dash.crop') }}</p>
+          <p class="mini-value">{{ store.currentCrop()?.name ?? '—' }}</p>
+          <p class="mini-sub muted">{{ i18n.t('dash.range', { min: thresholds().min, max: thresholds().max }) }}</p>
+        </div>
+      </mat-card>
+    </div>
+  </div>
+
+  <div class="card-grid">
+    <!-- Clima -->
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-icon mat-card-avatar aria-hidden="true">partly_cloudy_day</mat-icon>
+        <mat-card-title>{{ i18n.t('dash.weather') }}</mat-card-title>
+        <mat-card-subtitle>{{ i18n.t('dash.next12h') }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @let weather = store.weather();
+        @if (weather.loading && !weather.value) {
+          <app-loading [rows]="2" [height]="28" />
+        } @else if (weather.error && !weather.value) {
+          <app-error-state [message]="i18n.t('ai.noWeather')" (retry)="store.loadWeather()" />
+        } @else if (weather.value; as w) {
+          <div class="weather">
+            <div>
+              <p class="big">{{ w.temperature | number: '1.0-1' }} °C</p>
+              <p class="muted">{{ i18n.t('dash.airHumidity', { value: i18n.formatNumber(w.airHumidity, 0) }) }}</p>
+            </div>
+            <div>
+              <p class="big" [class.text-wet]="w.rainProbabilityNext12h > 70">
+                {{ w.rainProbabilityNext12h | number: '1.0-0' }} %
+              </p>
+              <p class="muted">
+                {{ i18n.t('dash.rainProb', { mm: i18n.formatNumber(w.precipitationNext12h) }) }}
+              </p>
+            </div>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- Último análisis de la IA -->
+    <mat-card appearance="outlined">
+      <mat-card-header>
+        <mat-icon mat-card-avatar aria-hidden="true">psychology</mat-icon>
+        <mat-card-title>{{ i18n.t('dash.analysis') }}</mat-card-title>
+        @if (store.latestAnalysis().value; as a) {
+          <mat-card-subtitle>{{ a.createdAt | date: 'short' }}</mat-card-subtitle>
+        }
+      </mat-card-header>
+      <mat-card-content>
+        @let analysis = store.latestAnalysis();
+        @if (analysis.loading && !analysis.value) {
+          <app-loading [rows]="3" />
+        } @else if (analysis.error && !analysis.value) {
+          <app-error-state (retry)="store.reload()" />
+        } @else if (!store.analysisMatchesCrop()) {
+          <p class="muted">{{ i18n.t('dash.updating', { crop: store.currentCropName() ?? '' }) }}</p>
+          <mat-progress-bar mode="indeterminate" [attr.aria-label]="i18n.t('dash.updating', { crop: store.currentCropName() ?? '' })" />
+        } @else if (analysis.value; as a) {
+          <p class="risk-line">
+            <span class="risk" [class]="a.riskLevel">{{ riskLabel(a.riskLevel) }}</span>
+            <app-moisture-level-chip [level]="a.moistureLevel" />
+          </p>
+          <p>{{ a.summary }}</p>
+          <p class="next">
+            <mat-icon aria-hidden="true">schedule</mat-icon>
+            {{ i18n.t('dash.nextIrrigation') }} <strong>{{ nextIrrigation() }}</strong>
+          </p>
+        } @else {
+          <app-empty-state [message]="i18n.t('dash.noAnalysis')" icon="psychology_alt" />
+        }
+      </mat-card-content>
+      <mat-card-actions>
+        <a mat-button routerLink="/ia">{{ i18n.t('dash.viewAnalysis') }}</a>
+      </mat-card-actions>
+    </mat-card>
+
+    <!-- Gráfica en vivo -->
+    <mat-card appearance="outlined" class="chart-card">
+      <mat-card-header>
+        <mat-icon mat-card-avatar aria-hidden="true">show_chart</mat-icon>
+        <mat-card-title>{{ i18n.t('dash.chartTitle') }}</mat-card-title>
+        <mat-card-subtitle>{{ i18n.t('dash.chartSubtitle') }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        @if (store.liveSamples().length < 2) {
+          <app-empty-state />
+        } @else {
+          <div class="chart" role="img" [attr.aria-label]="i18n.t('hist.chart')">
+            <canvas baseChart type="line" [data]="chartData()" [options]="chartOptions()"></canvas>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+</section>

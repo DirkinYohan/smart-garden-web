@@ -1,0 +1,162 @@
+.top {
+  display: grid;
+  gap: var(--sg-card-gap);
+  grid-template-columns: minmax(280px, 1fr) minmax(280px, 1.4fr);
+}
+
+.gauge-card mat-card-content {
+  padding-top: 8px;
+}
+
+.gauge-skeleton {
+  width: 220px;
+  height: 220px;
+  border-radius: 50%;
+  margin: 16px auto;
+}
+
+.alert {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  margin: 8px 0 0;
+  padding: 8px;
+  border-radius: 8px;
+  background: var(--mat-sys-error-container);
+  color: var(--mat-sys-on-error-container);
+}
+
+.status-grid {
+  display: grid;
+  gap: var(--sg-card-gap);
+  grid-template-columns: repeat(2, 1fr);
+}
+
+.mini {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 12px;
+  padding: 16px;
+
+  p {
+    margin: 0;
+  }
+}
+
+.mini-icon {
+  font-size: 36px;
+  width: 36px;
+  height: 36px;
+  flex-shrink: 0;
+  color: var(--mat-sys-primary);
+}
+
+.mini-label {
+  font: var(--mat-sys-label-medium);
+  color: var(--mat-sys-on-surface-variant);
+}
+
+.mini-value {
+  font: var(--mat-sys-title-medium);
+}
+
+.mini-sub {
+  font: var(--mat-sys-body-small);
+}
+
+.pump.watering {
+  color: var(--sg-wet);
+  animation: drip 1s ease-in-out infinite;
+}
+
+@keyframes drip {
+  0%,
+  100% {
+    transform: translateY(0);
+    opacity: 1;
+  }
+  50% {
+    transform: translateY(4px);
+    opacity: 0.6;
+  }
+}
+
+.weather {
+  display: flex;
+  justify-content: space-around;
+  gap: 16px;
+  text-align: center;
+
+  p {
+    margin: 0;
+  }
+}
+
+.big {
+  font: var(--mat-sys-display-small);
+}
+
+.risk-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 8px;
+}
+
+.risk {
+  display: inline-block;
+  padding: 2px 10px;
+  border-radius: 12px;
+  font: var(--mat-sys-label-large);
+  margin: 0 0 8px;
+}
+
+.risk.LOW {
+  background: color-mix(in srgb, var(--sg-ok) 20%, transparent);
+  color: var(--sg-ok);
+}
+
+.risk.MEDIUM {
+  background: color-mix(in srgb, var(--sg-warn) 20%, transparent);
+  color: var(--sg-warn);
+}
+
+.risk.HIGH {
+  background: color-mix(in srgb, var(--sg-dry) 20%, transparent);
+  color: var(--sg-dry);
+}
+
+.next {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin: 0;
+
+  mat-icon {
+    color: var(--mat-sys-primary);
+  }
+}
+
+.chart-card {
+  grid-column: span 1;
+}
+
+.chart {
+  position: relative;
+  height: 200px;
+}
+
+@media (max-width: 839px) {
+  .top {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pump.watering {
+    animation: none;
+  }
+}
