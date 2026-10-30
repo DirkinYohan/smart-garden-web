@@ -111,9 +111,19 @@
           } @else if (gapInvalid()) {
             <p class="error" role="alert">{{ i18n.t('ctrl.gapError') }}</p>
           }
-          <mat-slide-toggle class="toggle" [checked]="cfg.rainPause" [disabled]="saving()" (change)="setRainPause($event.checked)">
+          <mat-slide-toggle
+            class="toggle rain-pause"
+            [checked]="cfg.rainPause"
+            [disabled]="!canToggleRainPause() || saving()"
+            (change)="setRainPause($event.checked)"
+          >
             {{ i18n.t('ctrl.rainPauseToggle') }}
           </mat-slide-toggle>
+          @if (isManual()) {
+            <p class="note">
+              <mat-icon aria-hidden="true">lock</mat-icon> {{ i18n.t('ctrl.rainPauseManualLocked') }}
+            </p>
+          }
         </mat-card-content>
         <mat-card-actions align="end">
           <button mat-button type="button" (click)="resetThresholds()" [disabled]="!canEditThresholds() || !thresholdsDirty() || saving()">

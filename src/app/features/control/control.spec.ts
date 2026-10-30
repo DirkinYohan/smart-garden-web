@@ -121,6 +121,23 @@ describe('Control · umbrales por cultivo', () => {
     expect((save as HTMLButtonElement).disabled).toBe(true);
   });
 
+  it('locks the rain pause switch in MANUAL mode', () => {
+    store.setConfig(config({ mode: 'MANUAL', rainPause: true }));
+    fixture.detectChanges();
+
+    const toggle = fixture.nativeElement.querySelector('mat-slide-toggle.rain-pause button') as HTMLButtonElement;
+    expect(toggle.disabled || toggle.getAttribute('aria-disabled') === 'true').toBe(true);
+    expect(fixture.nativeElement.textContent).toContain('La pausa por lluvia solo aplica en Automático e IA');
+  });
+
+  it('keeps the rain pause switch enabled in AI mode (the AI owns it)', () => {
+    store.setConfig(config({ mode: 'AI', rainPause: false }));
+    fixture.detectChanges();
+
+    const toggle = fixture.nativeElement.querySelector('mat-slide-toggle.rain-pause button') as HTMLButtonElement;
+    expect(toggle.disabled || toggle.getAttribute('aria-disabled') === 'true').toBe(false);
+  });
+
   it('locks the sliders in AI mode with an explanatory note', () => {
     store.setConfig(config({ mode: 'AI' }));
     fixture.detectChanges();

@@ -79,6 +79,9 @@ export class Control {
   /** Los umbrales solo se editan en modo Automático: en IA los fija la IA y en Manual no aplican. */
   protected readonly canEditThresholds = computed(() => !this.isAi() && !this.isManual());
 
+  /** La pausa por lluvia aplica en Automático e IA; en Manual el riego lo ordena el usuario. */
+  protected readonly canToggleRainPause = computed(() => !this.isManual());
+
   /** "Rango recomendado para Tomate: 40–70 %" del cultivo seleccionado en Control. */
   protected readonly cropRangeHint = computed(() => {
     const crop = this.cropById(this.config()?.cropId);
