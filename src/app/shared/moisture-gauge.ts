@@ -56,8 +56,7 @@ function arc(cx: number, cy: number, r: number, from: number, to: number): strin
       height: auto;
       overflow: visible;
     }
-    /* Los arcos son trazos, nunca superficies rellenas. */
-    path {
+      path {
       fill: none;
       stroke-linecap: round;
     }
