@@ -21,6 +21,3 @@ jobs:
         run: npx ng test --watch=false
       - name: Build de producción
         run: npm run build
-        env:
-          # URL ficticia: el build solo comprueba que el pipeline de producción compila
-          API_GATEWAY_URL: https://gateway.example.com
