@@ -4,7 +4,6 @@ import { MatTooltipModule } from '@angular/material/tooltip';
 import { I18nService } from '../core/i18n/i18n.service';
 import { ConnectionState } from '../models/garden.models';
 
-/** "Conectado / Reconectando / Desconectado" pill for the real-time channel. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-connection-indicator',

@@ -3,7 +3,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { I18nService } from '../core/i18n/i18n.service';
 
-/** "No data yet" placeholder. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-empty-state',
@@ -24,7 +23,6 @@ export class EmptyState {
   protected readonly text = () => this.message() ?? this.i18n.t('state.defaultEmpty');
 }
 
-/** Error placeholder with a retry button. */
 @Component({
   selector: 'app-error-state',
   imports: [MatIconModule, MatButtonModule],
@@ -46,7 +44,6 @@ export class ErrorState {
   protected readonly text = () => this.message() ?? this.i18n.t('state.defaultError');
 }
 
-/** Skeleton loading placeholder (lines of given height). */
 @Component({
   selector: 'app-loading',
   template: `

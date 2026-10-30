@@ -35,16 +35,15 @@ export class Login {
   private readonly router = inject(Router);
   protected readonly i18n = inject(I18nService);
 
-  /** Query params (component input binding). */
   readonly returnUrl = input<string>();
   readonly reason = input<string>();
 
   protected readonly mock = environment.useMock;
   protected readonly submitting = signal(false);
   protected readonly hidePassword = signal(true);
-  /** Mensaje del backend (401 credenciales o 423 cuenta bloqueada). */
+
   protected readonly failure = signal<string | null>(null);
-  /** Segundos que quedan de espera obligatoria tras un 423. */
+
   protected readonly cooldown = signal(0);
   protected readonly canSubmit = computed(() => !this.submitting() && this.cooldown() === 0);
   private cooldownTimer: ReturnType<typeof setInterval> | undefined;
@@ -65,7 +64,7 @@ export class Login {
     this.auth.login(username.trim(), password).subscribe({
       next: (res) => {
         this.submitting.set(false);
-        // Credencial inicial: no se entra a la aplicación hasta cambiarla.
+
         if (res.mustChangePassword) {
           this.auth.goToPasswordChange();
           return;
@@ -83,7 +82,6 @@ export class Login {
     });
   }
 
-  /** Tras una cuenta bloqueada el botón queda deshabilitado unos segundos. */
   private startCooldown(seconds: number): void {
     clearInterval(this.cooldownTimer);
     this.cooldown.set(seconds);

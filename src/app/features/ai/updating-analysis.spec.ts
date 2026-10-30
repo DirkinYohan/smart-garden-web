@@ -14,7 +14,7 @@ describe('UpdatingAnalysis', () => {
     expect(banner.getAttribute('role')).toBe('status');
     expect(banner.textContent).toContain('Actualizando análisis para Tomate…');
     expect(banner.querySelector('mat-progress-spinner')).toBeTruthy();
-    // Con análisis automáticos activos no se ofrece el botón manual
+
     expect(banner.querySelector('button')).toBeNull();
   });
 

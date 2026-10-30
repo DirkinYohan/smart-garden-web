@@ -1,7 +1,3 @@
-/**
- * Wire format of the api-gateway (smart-garden-backend). Only used by core/api; the rest of the
- * app works with the UI models in garden.models.ts.
- */
 import { AnalysisSource, IrrigationMode, RiskLevel } from './garden.models';
 
 export interface TelemetryReadingDto {
@@ -112,7 +108,7 @@ export interface AnalysisDto {
   recommendations: string[];
   applied: boolean;
   fallbackReason: string | null;
-  // v1.1 — absent / null in analyses created before (and in older gateways)
+
   headline?: string | null;
   healthStatus?: string | null;
   nextAction?: string | null;
@@ -120,7 +116,7 @@ export interface AnalysisDto {
   inputSnapshot?: InputSnapshotDto | null;
   projection?: ProjectionDto | null;
   fallbackDetail?: string | null;
-  // v1.2 — SENSOR_ERROR | VERY_DRY | DRY | OPTIMAL | WET | SATURATED (null in older analyses)
+
   moistureLevel?: string | null;
 }
 
@@ -153,7 +149,7 @@ export interface InputSnapshotDto {
   sensorOk: boolean | null;
   rainPause?: boolean | null;
   readingAgeMinutes?: number | null;
-  // v1.2
+
   cropId?: number | null;
   moistureLevel?: string | null;
 }

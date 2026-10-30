@@ -5,7 +5,6 @@ import { Tone } from '../../shared/ai-labels';
 import { BulletGauge } from '../../shared/bullet-gauge';
 import { StatTile } from '../../shared/stat-tile';
 
-/** B. Four key indicators: moisture vs range, next irrigation, drying rate, rain in 12 h. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ai-kpi-row',
@@ -72,15 +71,13 @@ export class KpiRow {
   private readonly i18n = inject(I18nService);
 
   readonly analysis = input.required<Analysis>();
-  /** Live value from /topic/telemetry (null if unknown). */
+
   readonly liveMoisture = input<number | null>(null);
 
-  /** false cuando el sensor no da lecturas válidas (p. ej. fuera del agua): no se muestra un dato viejo como si fuera actual. */
   readonly sensorOk = input<boolean>(true);
   readonly weather = input<Weather | null>(null);
   readonly now = input.required<number>();
 
-  /** Valor vivo; si el sensor falla no se usa el del último análisis (sería un dato viejo). */
   protected readonly moisture = computed(() => {
     if (!this.sensorOk()) return null;
     return this.liveMoisture() ?? this.analysis().inputSnapshot?.currentMoisture ?? null;
@@ -111,7 +108,7 @@ export class KpiRow {
     const key =
       m < a.recommendedMin ? 'ai.kpi.below' : m > a.recommendedMax ? 'ai.kpi.above' : 'ai.kpi.inside';
     const range = this.i18n.t(key, { min: a.recommendedMin, max: a.recommendedMax });
-    // Si el valor mostrado no es el vivo, se aclara de dónde sale.
+
     const snapshot = this.snapshotMoisture();
     return this.liveMoisture() === null && snapshot !== null
       ? `${range} · ${this.i18n.t('ai.kpi.snapshot', { value: snapshot })}`
@@ -124,7 +121,7 @@ export class KpiRow {
       return { value: this.i18n.t('ai.kpi.noProjection'), sub: null, tone: 'neutral' };
     }
     if (p.dryingRatePerHour === null) {
-      // without a drying rate the projection is flat: "No previsto" would be a guess
+
       return {
         value: this.i18n.t('ai.kpi.noEstimate'),
         sub: this.i18n.t('ai.kpi.flat'),

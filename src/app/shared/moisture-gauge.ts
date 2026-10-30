@@ -17,14 +17,6 @@ function arc(cx: number, cy: number, r: number, from: number, to: number): strin
   return `M ${x1} ${y1} A ${r} ${r} 0 ${large} 1 ${x2} ${y2}`;
 }
 
-/**
- * Medidor circular 0–100 % de humedad: color y texto según los seis niveles del backend (muy seca, baja,
- * ideal, alta, saturada, error de sensor), con marcas en los dos umbrales.
- *
- * El color del nivel se pasa como una sola variable CSS (`--level-color`) al SVG: el arco solo cambia de
- * `stroke` (nunca de `fill`, que lo convertiría en una cuña y taparía el porcentaje) y el número y el texto solo
- * cambian de `fill`.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-moisture-gauge',
@@ -130,7 +122,6 @@ export class MoistureGauge {
     classifyMoisture(this.value(), this.min(), this.max(), this.sensorOk()),
   );
 
-  /** Un único color para arco, número y texto. */
   protected readonly color = computed(() => moistureLevelUi(this.level()).color);
 
   protected readonly caption = computed(() => this.i18n.moistureLevelLabel(this.level()));

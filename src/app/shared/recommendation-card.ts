@@ -6,7 +6,6 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { RecommendationDetail } from '../models/garden.models';
 import { CATEGORY_UI, PRIORITY_UI } from './ai-labels';
 
-/** One recommendation with its category icon, priority chip and optional one-click action. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-recommendation-card',

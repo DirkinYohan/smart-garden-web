@@ -9,7 +9,6 @@ export interface ConfirmDialogData {
   confirmText?: string;
 }
 
-/** Generic confirmation dialog; closes with `true` when confirmed. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-confirm-dialog',

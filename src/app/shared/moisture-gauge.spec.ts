@@ -16,16 +16,10 @@ function gauge(value: number, min = 40, max = 70, sensorOk = true) {
   return { fixture, svg, path, caption, number };
 }
 
-/**
- * Regresión del medidor del Panel: el arco del valor debe ser un TRAZO. Cuando el nivel se aplicaba como
- * clase al propio arco, la regla compartida le ponía `fill` y el medidor se veía como una cuña que tapaba el
- * porcentaje y el texto.
- */
 describe('MoistureGauge', () => {
   it('draws the value arc as a stroke, never as a filled shape', () => {
     const { path, svg } = gauge(77);
 
-    // Una sola clase: el color va por variable CSS, no por clase de nivel en el arco
     expect(path.getAttribute('class')).toBe('value');
     expect(path.getAttribute('data-level')).toBe('WET');
     expect(svg.style.getPropertyValue('--level-color')).toBe('var(--sg-wet)');

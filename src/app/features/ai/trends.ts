@@ -15,7 +15,6 @@ export type StatsState = { state: 'loading' } | { state: 'error' } | { state: 'r
 
 const MAX_THRESHOLD_POINTS = 120;
 
-/** F. Trends of the last 7 / 30 days (GET /ai/stats). Fails independently of the rest of the page. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ai-trends',
@@ -55,7 +54,6 @@ export class Trends {
     };
   });
 
-  // --- Daily moisture
   private readonly days_ = computed(() => this.data()?.dailyMoisture ?? []);
   protected readonly hasDaily = computed(() => this.days_().some((d) => d.avg !== null || d.irrigations > 0));
 
@@ -78,7 +76,7 @@ export class Trends {
   protected readonly dailyOptions = computed<ChartConfiguration<'line'>['options']>(() =>
     this.baseOptions({
       y: { min: 0, max: 100, ticks: { callback: (v: string | number) => `${v} %` } },
-      // Irrigation bars use the lower third of the chart so they do not hide the moisture band.
+
       y1: {
         position: 'right',
         min: 0,
@@ -98,7 +96,6 @@ export class Trends {
     return `En promedio el suelo estuvo al ${this.i18n.formatNumber(avg, 0)} % y se regó ${irrigations} ${irrigations === 1 ? 'vez' : 'veces'}.`;
   });
 
-  // --- Recommended thresholds over time
   private readonly thresholds = computed(() => {
     const t = this.data()?.thresholdHistory ?? [];
     const step = Math.max(1, Math.ceil(t.length / MAX_THRESHOLD_POINTS));
@@ -160,7 +157,6 @@ export class Trends {
     return `El rango recomendado se movió entre ${lo} % y ${hi} %. ${risky ? `Hubo ${risky} análisis con riesgo alto.` : 'No hubo análisis con riesgo alto.'}`;
   });
 
-  // --- Health distribution
   protected readonly healthTotal = computed(() => {
     const h = this.data()?.healthDistribution;
     return h ? h.GOOD + h.ATTENTION + h.CRITICAL : 0;

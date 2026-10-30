@@ -2,7 +2,6 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 import { MatIconModule } from '@angular/material/icon';
 import { Tone } from './ai-labels';
 
-/** Small KPI tile: icon, question-like label, big value, plain-language sentence, optional content. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-stat-tile',

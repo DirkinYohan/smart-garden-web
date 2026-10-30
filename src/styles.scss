@@ -1,6 +1,5 @@
 @use '@angular/material' as mat;
 
-// Material 3 theme: green (garden) primary, teal tertiary. `color-scheme` switches light / dark.
 html {
   height: 100%;
   color-scheme: light;
@@ -15,7 +14,6 @@ html {
     )
   );
 
-  // App tokens (moisture states, risk levels)
   --sg-dry: #c62828;
   --sg-ok: #2e7d32;
   --sg-wet: #1565c0;
@@ -85,7 +83,6 @@ h3 {
   color: var(--sg-wet);
 }
 
-// Skeleton loading placeholder
 .skeleton {
   border-radius: 8px;
   background: linear-gradient(
@@ -113,7 +110,6 @@ h3 {
   }
 }
 
-// Snackbars
 .mat-mdc-snack-bar-container.snack-error {
   --mat-snack-bar-container-color: var(--mat-sys-error-container);
   --mat-snack-bar-supporting-text-color: var(--mat-sys-on-error-container);
@@ -126,7 +122,6 @@ h3 {
   --mat-snack-bar-button-color: var(--mat-sys-on-primary-container);
 }
 
-// Visible keyboard focus
 :focus-visible {
   outline: 2px solid var(--mat-sys-primary);
   outline-offset: 2px;

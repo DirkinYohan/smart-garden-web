@@ -1,12 +1,5 @@
-/**
- * Diccionarios de la interfaz. Las claves son estables y planas (`pantalla.elemento`).
- * Las cadenas que vienen del backend (resumen de la IA, nombres de cultivo, mensajes de error del
- * servidor) no se traducen aquí: llegan ya redactadas en español.
- *
- * Marcadores: se escriben con llaves, p. ej. "{crop}" o "{min}", y se sustituyen en `I18nService.t()`.
- */
 export const ES: Record<string, string> = {
-  // --- común ---
+
   'common.ok': 'OK',
   'common.cancel': 'Cancelar',
   'common.confirm': 'Confirmar',
@@ -19,12 +12,10 @@ export const ES: Record<string, string> = {
   'common.edit': 'Editar',
   'common.required': 'Obligatorio',
 
-  // --- idioma ---
   'lang.switch': 'Cambiar idioma / Switch language',
   'lang.spanish': 'Español',
   'lang.english': 'English',
 
-  // --- navegación y barra ---
   'nav.panel': 'Panel',
   'nav.history': 'Historial',
   'nav.control': 'Control',
@@ -46,7 +37,6 @@ export const ES: Record<string, string> = {
   'conn.tooltip.connected': 'Recibiendo datos en tiempo real',
   'conn.tooltip.connecting': 'Intentando conectar con el servidor en tiempo real',
 
-  // --- login ---
   'login.title': 'Smart Garden',
   'login.subtitle': 'Monitoreo y riego inteligente de tu huerta',
   'login.username': 'Usuario',
@@ -63,7 +53,6 @@ export const ES: Record<string, string> = {
   'login.cooldown': 'Espera {seconds} s',
   'login.demoHint': 'Modo demostración: usuario {user}, contraseña {password}.',
 
-  // --- cambio de contraseña ---
   'pwd.title': 'Cambiar contraseña',
   'pwd.mandatory': 'Por seguridad, crea una contraseña nueva antes de continuar.',
   'pwd.lastChange': 'Último cambio: {when}',
@@ -99,7 +88,6 @@ export const ES: Record<string, string> = {
   'pwd.ago.oneDay': 'hace 1 día',
   'pwd.ago.days': 'hace {n} días',
 
-  // --- enums compartidos ---
   'mode.AUTO': 'Automático',
   'mode.MANUAL': 'Manual',
   'mode.AI': 'IA',
@@ -130,7 +118,6 @@ export const ES: Record<string, string> = {
   'level.WET': 'Alta',
   'level.SATURATED': 'Saturada',
 
-  // --- motivos del respaldo de la IA ---
   'fallback.NO_API_KEY': 'la IA no está configurada',
   'fallback.QUOTA_EXCEEDED': 'se alcanzó el límite gratuito de la IA',
   'fallback.TIMEOUT': 'la IA tardó demasiado en responder',
@@ -142,7 +129,6 @@ export const ES: Record<string, string> = {
   'fallback.unknown': 'la IA no estaba disponible',
   'fallback.sentence': 'La IA no estaba disponible ({why}); se usaron reglas de respaldo.',
 
-  // --- velocidad de secado ---
   'drying.needData': 'Se necesita al menos 1 h de lecturas válidas sin riego para calcularla',
   'drying.gaining': 'La tierra está ganando humedad',
   'drying.almostNone': 'La tierra casi no se seca',
@@ -150,13 +136,11 @@ export const ES: Record<string, string> = {
   'drying.normal': 'La tierra se seca a ritmo normal',
   'drying.fast': 'La tierra se seca rápido',
 
-  // --- acciones de un clic ---
   'action.confirm.APPLY_THRESHOLDS': 'Se cambiarán los umbrales de riego a los recomendados por la IA.',
   'action.confirm.ENABLE_AI_MODE': 'La IA ajustará los umbrales automáticamente cada 30 minutos.',
   'action.confirm.DISABLE_RAIN_PAUSE': 'El riego automático volverá a funcionar aunque haya pronóstico de lluvia.',
   'action.confirm.ENABLE_RAIN_PAUSE': 'El riego automático se pausará cuando se espere lluvia (salvo humedad crítica).',
 
-  // --- por qué la IA decició esto ---
   'why.moisture': 'Humedad actual',
   'why.noReading': 'Sin lectura válida',
   'why.noData': 'Sin datos',
@@ -192,7 +176,6 @@ export const ES: Record<string, string> = {
   'kpi.noData': 'Sin datos',
   'kpi.accumulated': '{mm} mm acumulados',
 
-  // --- gráficas ---
   'chart.rainProbability': 'Probabilidad de lluvia (%)',
   'chart.temperature': 'Temperatura (°C)',
   'chart.rainNone': 'No se espera lluvia importante en las próximas 12 h (máximo {max} %).',
@@ -203,7 +186,6 @@ export const ES: Record<string, string> = {
   'chart.recommended': 'Rango recomendado',
   'chart.moisture': 'Humedad (%)',
 
-  // --- tiempos relativos ---
   'time.none': 'sin datos',
   'time.seconds': 'hace {n} s',
   'time.minutes': 'hace {n} min',
@@ -216,11 +198,9 @@ export const ES: Record<string, string> = {
   'time.yesterday': 'ayer',
   'time.tomorrow': 'mañana',
 
-  // --- estados de vista ---
   'state.defaultEmpty': 'Todavía no hay datos para mostrar',
   'state.defaultError': 'No se pudieron cargar los datos',
 
-  // --- panel ---
   'dash.title': 'Panel de la huerta',
   'dash.moisture': 'Humedad del suelo',
   'dash.pump': 'Bomba',
@@ -247,7 +227,6 @@ export const ES: Record<string, string> = {
   'dash.sensorWarning': 'Revisar sensor: la lectura no es confiable',
   'dash.updating': 'Actualizando análisis para {crop}…',
 
-  // --- control ---
   'ctrl.title': 'Control de riego',
   'ctrl.saving': 'Guardando cambios',
   'ctrl.modeTitle': 'Modo de riego',
@@ -295,7 +274,6 @@ export const ES: Record<string, string> = {
   'ctrl.confirmWater': 'Se encenderá la bomba durante {seconds} segundos. ¿Continuar?',
   'ctrl.confirmWaterOk': 'Regar',
 
-  // --- historial ---
   'hist.title': 'Historial de riegos',
   'hist.timeRange': 'Rango de tiempo',
   'hist.chartAria': 'Gráfica de humedad del suelo, rango {range}',
@@ -317,7 +295,6 @@ export const ES: Record<string, string> = {
   'hist.noEvents': 'Aún no hay riegos registrados',
   'hist.inProgress': 'En curso',
 
-  // --- IA ---
   'ai.title': 'Inteligencia artificial',
   'ai.statusTitle': 'Estado de tu huerta',
   'ai.analyze': 'Analizar ahora',

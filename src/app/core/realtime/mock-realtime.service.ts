@@ -11,7 +11,6 @@ import { ApiMappers } from '../api/api-mappers';
 import { MockBackend } from '../mock/mock-backend';
 import { RealtimeService } from './realtime.service';
 
-/** Real-time feed of the simulated backend (environment.useMock). */
 @Injectable()
 export class MockRealtimeService extends RealtimeService {
   private readonly backend = inject(MockBackend);

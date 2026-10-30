@@ -4,7 +4,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { HealthStatus } from '../models/garden.models';
 import { HEALTH_UI } from './ai-labels';
 
-/** Traffic-light health indicator: icon + text + color (never color alone). */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-health-badge',

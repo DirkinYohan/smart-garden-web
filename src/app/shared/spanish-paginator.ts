@@ -1,7 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatPaginatorIntl } from '@angular/material/paginator';
 
-/** Spanish texts for mat-paginator. */
 @Injectable()
 export class SpanishPaginatorIntl extends MatPaginatorIntl {
   override itemsPerPageLabel = 'Filas por página';

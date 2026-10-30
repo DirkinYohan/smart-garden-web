@@ -24,11 +24,6 @@ interface Sample {
   pumpOn: boolean;
 }
 
-/**
- * In-memory simulation of the whole backend (environment.useMock). Produces the same wire format
- * as the api-gateway, so mappers, interceptors and UI are exercised exactly as with the real one.
- * The simulated ESP32 waters by thresholds in AUTO/AI and obeys PUMP commands in MANUAL.
- */
 @Injectable({ providedIn: 'root' })
 export class MockBackend {
   readonly telemetry$ = new Subject<TelemetryReadingDto>();
@@ -68,10 +63,9 @@ export class MockBackend {
   private lastManualAnalysis = 0;
   private timer: ReturnType<typeof setInterval> | undefined;
 
-  // --- credenciales (mismo comportamiento que el api-gateway) ---
   private username = 'admin';
   private password = 'admin123';
-  /** La primera contraseña es de un solo uso: obliga a cambiarla. */
+
   private mustChange = true;
   private passwordChangedAt: string | null = null;
   private failedAttempts = 0;
@@ -84,7 +78,6 @@ export class MockBackend {
     this.analyses.unshift(this.buildAnalysis('SCHEDULED', Date.now() - 20 * 60_000));
   }
 
-  /** Starts the 5 s simulation loop (idempotent). */
   start(): void {
     if (this.timer) return;
     this.tick();
@@ -97,9 +90,6 @@ export class MockBackend {
     this.timer = undefined;
   }
 
-  // ---- autenticación (wire format)
-
-  /** POST /auth/login: bloquea la cuenta tras 5 fallos (423) y avisa del cambio pendiente. */
   login(username: string, password: string): {
     token: string;
     expiresAt: string;
@@ -134,7 +124,6 @@ export class MockBackend {
     };
   }
 
-  /** GET /auth/me */
   me(): { username: string; role: string; mustChangePassword: boolean; passwordChangedAt: string | null } {
     return {
       username: this.username,
@@ -144,7 +133,6 @@ export class MockBackend {
     };
   }
 
-  /** PUT /auth/password: valida la actual y la política, y devuelve un token nuevo. */
   changePassword(current: string, next: string): { token: string; expiresAt: string } {
     if (current !== this.password) {
       throw new MockHttpError(400, 'La contraseña actual no es correcta');
@@ -163,12 +151,9 @@ export class MockBackend {
     };
   }
 
-  /** El gateway solo permite /auth/me y /auth/password mientras el cambio esté pendiente. */
   requiresPasswordChange(): boolean {
     return this.mustChange;
   }
-
-  // ---- REST equivalents (wire format)
 
   status(): StatusResponseDto {
     this.start();
@@ -229,7 +214,7 @@ export class MockBackend {
       const crop = this.crops.find((c) => c.id === body.cropProfileId);
       if (!crop) throw new MockHttpError(404, `No existe el perfil de cultivo ${body.cropProfileId}`);
       next.crop = crop;
-      // Un cultivo nuevo trae siempre su rango, en AUTO, MANUAL y AI (igual que el backend).
+
       if (body.minMoisture === undefined && body.maxMoisture === undefined) {
         next.minMoisture = crop.minMoisture;
         next.maxMoisture = crop.maxMoisture;
@@ -265,7 +250,7 @@ export class MockBackend {
     Object.assign(crop, { ...body, name: body.name.trim() });
     if (this.config.crop?.id === id) {
       this.config = { ...this.config, crop: { ...crop } };
-      // El perfil editado arrastra sus umbrales en todos los modos (el backend hace lo mismo en AUTO).
+
       this.config = { ...this.config, minMoisture: crop.minMoisture, maxMoisture: crop.maxMoisture, updatedBy: 'SYSTEM' };
       this.config$.next(this.getConfig());
     }
@@ -354,8 +339,6 @@ export class MockBackend {
     };
   }
 
-  // ---- simulation
-
   private tick(): void {
     const now = Date.now();
     const { mode, minMoisture, maxMoisture, rainPause } = this.config;
@@ -366,7 +349,7 @@ export class MockBackend {
     } else if (this.pumpOn && this.moisture >= maxMoisture) {
       this.setPump(false);
     }
-    // The simulated pump is fast so a full cycle is visible in a demo.
+
     this.moisture += this.pumpOn ? 2.5 + Math.random() : -(0.15 + Math.random() * 0.25);
     this.moisture = Math.max(5, Math.min(95, this.moisture));
 
@@ -415,7 +398,6 @@ export class MockBackend {
     this.pumpOn = on;
   }
 
-  /** 30 days of 5-minute samples with realistic drying and watering cycles. */
   private seedHistory(): void {
     const end = Date.now() - FIVE_MIN;
     let m = 60;
@@ -450,8 +432,6 @@ export class MockBackend {
     this.moisture = Math.max(42, Math.min(65, m));
   }
 
-  // ---- AI analyses (same deterministic rules as ai-service: projection, health, next action, actions)
-
   stats(days: number): AiStatsDto {
     if (days !== 7 && days !== 30) throw new MockHttpError(400, 'days debe ser 7 o 30');
     const since = Date.now() - days * 24 * 3600_000;
@@ -485,7 +465,7 @@ export class MockBackend {
   }
 
   private dailyMoisture(days: number): NonNullable<AiStatsDto['dailyMoisture']> {
-    const key = (t: number) => new Date(t).toLocaleDateString('en-CA'); // yyyy-MM-dd, local time
+    const key = (t: number) => new Date(t).toLocaleDateString('en-CA');
     const result = new Map<string, { sum: number; n: number; min: number; max: number; irr: number; pump: number }>();
     for (let i = days - 1; i >= 0; i--) {
       result.set(key(Date.now() - i * 24 * 3600_000), { sum: 0, n: 0, min: 100, max: 0, irr: 0, pump: 0 });
@@ -514,7 +494,6 @@ export class MockBackend {
     }));
   }
 
-  /** Lightweight analyses every 30 min over the seeded 30 days (for timeline and trends). */
   private seedAnalyses(): void {
     const crop = this.crops[1];
     const end = Date.now() - 40 * 60_000;
@@ -595,12 +574,10 @@ export class MockBackend {
     const min = cfg.minMoisture;
     const max = cfg.maxMoisture;
 
-    // drying rate: slope of the last 6 h without pump (points per hour)
     const recent = this.samples.filter((s) => s.t >= at - 6 * 3600_000 && !s.pumpOn);
     const rate = recent.length >= 4 ? slopePerHour(recent) : null;
     const confidence = rate === null ? 'LOW' : recent.length >= 40 ? 'HIGH' : 'MEDIUM';
 
-    // projection (same formula as ai-service)
     const points: { timestamp: string; moisture: number }[] = [];
     let value = m;
     let rainTotal = 0;
@@ -625,7 +602,7 @@ export class MockBackend {
     }
 
     const pauseApplies = rainExpected && cfg.rainPause;
-    // Mismo nivel que calcula el backend: el mensaje, el semáforo y la acción salen de aquí.
+
     const level = classifyMoisture(m, min, max);
     const health: HealthStatus =
       level === 'OPTIMAL' ? 'GOOD' : level === 'DRY' || level === 'WET' ? 'ATTENTION' : 'CRITICAL';
@@ -647,7 +624,7 @@ export class MockBackend {
         : level === 'OPTIMAL'
           ? 'LOW'
           : 'MEDIUM';
-    // La IA se mueve como máximo ±10 puntos del perfil del cultivo
+
     const [recMin, recMax] = clampToCrop(
       crop.minMoisture + (rainExpected ? -2 : 0),
       crop.maxMoisture,
@@ -820,7 +797,6 @@ function slopePerHour(samples: Sample[]): number {
   return sxx === 0 ? 0 : Math.round(Math.max(-10, Math.min(5, sxy / sxx)) * 100) / 100;
 }
 
-/** Titular coherente con el nivel (los mismos textos que el respaldo por reglas del backend). */
 function headlineFor(level: MoistureLevel, crop: string, rain: boolean): string {
   switch (level) {
     case 'VERY_DRY':
@@ -867,7 +843,6 @@ function summaryFor(
   }
 }
 
-/** Misma regla que `CropThresholdClamp` del backend: ±10 puntos del perfil, 10–90 y hueco ≥ 10. */
 function clampToCrop(min: number, max: number, profileMin: number, profileMax: number): [number, number] {
   const clamp = (v: number, lo: number, hi: number) => Math.min(hi, Math.max(lo, v));
   const floor = clamp(profileMin - 10, 10, 90);
@@ -888,14 +863,13 @@ export class MockHttpError extends Error {
   constructor(
     readonly status: number,
     message: string,
-    /** Código del cuerpo de error, p. ej. PASSWORD_CHANGE_REQUIRED. */
+
     readonly code?: string,
   ) {
     super(message);
   }
 }
 
-/** Misma política que el api-gateway (mensaje específico del primer incumplimiento). */
 function mockPolicyProblem(username: string, current: string, next: string): string | null {
   if (next.length < 10) return 'La contraseña debe tener al menos 10 caracteres';
   if (!/[A-ZÁÉÍÓÚÑ]/.test(next)) return 'La contraseña debe incluir al menos una mayúscula';

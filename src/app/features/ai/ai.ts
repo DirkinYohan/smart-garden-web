@@ -26,10 +26,6 @@ import { WhyFactors } from './why-factors';
 
 type Load<T> = { state: 'loading' | 'error' | 'ready'; data: T };
 
-/**
- * "Inteligencia artificial": how the garden is (A), key indicators (B), past + forecast (C), actionable
- * recommendations (D), why (E), trends (F), rain (G) and history (H). Each section loads and fails independently.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ai',
@@ -76,42 +72,31 @@ export class Ai implements OnDestroy {
 
   protected readonly latest = computed(() => this.store.latestAnalysis().value);
 
-  /** Cultivo vigente según la configuración (/config + /topic/config), nunca el del último análisis. */
   protected readonly cropName = computed(() => this.store.currentCropName());
 
-  /** El último análisis se hizo con otro cultivo: se avisa en lugar de mostrar el texto viejo. */
   protected readonly updatingAnalysis = computed(() => !this.store.analysisMatchesCrop());
 
-  /** Análisis automáticos activos (si no, el botón es la única forma de refrescar). */
   protected readonly autoAnalysis = computed(() => this.store.config().value?.aiEnabled ?? true);
 
-  /** Validez del sensor en la lectura en vivo. */
   protected readonly liveSensorOk = computed(() => this.store.status().value?.sensorOk ?? true);
 
-  /**
-   * Clock with minute precision: relative times only need minutes, and charts must not be rebuilt (and
-   * re-animated) on every 1 s tick of the store clock.
-   */
   protected readonly nowMinute = computed(() => Math.floor(this.store.now() / 60_000) * 60_000);
 
-  /** Live moisture from /topic/telemetry when the reading is valid and recent. */
   protected readonly liveMoisture = computed(() => {
     const s = this.store.status().value;
     return s?.hasReading && s.sensorOk && this.store.deviceOnline() ? s.moisture : null;
   });
 
-  /** Recommendations by priority; actions already satisfied by the current config are hidden. */
   protected readonly details = computed(() => {
     const analysis = this.latest();
     const config = this.store.config().value;
-    // Con el cultivo cambiado, las recomendaciones viejas no aplican: se espera el análisis nuevo.
+
     if (!analysis || !this.store.analysisMatchesCrop()) return [];
     return [...analysis.recommendationDetails]
       .sort((a, b) => PRIORITY_UI[a.priority].order - PRIORITY_UI[b.priority].order)
       .map((d) => (d.action && !isActionStillUseful(d.action.type, analysis, config) ? { ...d, action: null } : d));
   });
 
-  /** History from REST merged with analyses received over WebSocket since. */
   protected readonly timeline = computed(() => {
     const seen = new Set<string>();
     return [...this.store.analysisFeed(), ...this.list().data]
@@ -123,7 +108,7 @@ export class Ai implements OnDestroy {
     this.loadHistory();
     this.loadList();
     effect(() => this.loadStats(this.statsDays()));
-    // Real time: a new analysis from /topic/analysis → soft highlight + snackbar.
+
     effect(() => {
       const newest = this.store.analysisFeed()[0];
       if (!newest || newest.id === this.lastSeenFeedId) return;
@@ -156,7 +141,7 @@ export class Ai implements OnDestroy {
           analysis.source === 'GEMINI' ? 'Análisis completado con Gemini' : 'Análisis completado con las reglas de respaldo',
         );
       },
-      // 429 (one per minute) and other errors are shown by the error interceptor.
+
       error: () => this.analyzing.set(false),
     });
   }

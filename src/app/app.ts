@@ -9,6 +9,6 @@ import { ThemeService } from './core/theme.service';
   template: '<router-outlet />',
 })
 export class App {
-  // Instantiated at startup so the saved theme is applied before the first screen.
+
   protected readonly theme = inject(ThemeService);
 }

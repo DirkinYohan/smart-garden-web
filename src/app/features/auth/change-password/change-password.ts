@@ -16,7 +16,7 @@ import { NotificationService } from '../../../core/notification.service';
 import { LanguageToggle } from '../../../shared/language-toggle';
 
 interface Requirement {
-  /** Clave de traducción del requisito. */
+
   key: string;
   ok: boolean;
 }
@@ -27,10 +27,6 @@ interface Strength {
   percent: number;
 }
 
-/**
- * Cambio de contraseña. Se llega desde el menú de usuario o porque el backend lo exige (credencial inicial): en ese
- * caso la página es la única accesible y solo ofrece "Cerrar sesión" además del formulario.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-change-password',
@@ -72,7 +68,6 @@ export class ChangePassword {
     initialValue: '',
   });
 
-  /** Lista de requisitos en vivo (misma política que el backend). */
   protected readonly requirements = computed<Requirement[]>(() => {
     const value = this.next();
     const current = this.current();
@@ -97,7 +92,7 @@ export class ChangePassword {
     if (/[a-z]/.test(value)) points++;
     if (/\d/.test(value)) points++;
     if (/[^A-Za-z0-9]/.test(value)) points++;
-    // Por debajo del mínimo de la política siempre es débil, por mucha variedad que tenga.
+
     if (value.length < 10 || points <= 2) return { key: 'weak', labelKey: 'pwd.strength.weak', percent: 33 };
     if (points <= 4) return { key: 'medium', labelKey: 'pwd.strength.medium', percent: 66 };
     return { key: 'strong', labelKey: 'pwd.strength.strong', percent: 100 };
@@ -124,7 +119,7 @@ export class ChangePassword {
   });
 
   constructor() {
-    // Si se entra directo a la página, trae la fecha del último cambio.
+
     if (!this.auth.passwordChangedAt()) {
       this.auth.refresh().subscribe();
     }
@@ -146,7 +141,7 @@ export class ChangePassword {
       },
       error: (err: HttpErrorResponse) => {
         this.submitting.set(false);
-        // El mensaje del backend viene en español y no se traduce.
+
         const message = errorMessage(err);
         if (/actual|current/i.test(message)) {
           this.form.controls.currentPassword.setErrors({ server: message });

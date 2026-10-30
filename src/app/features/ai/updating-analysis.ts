@@ -4,10 +4,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 
-/**
- * Aviso que sustituye al texto viejo cuando el último análisis se hizo con otro cultivo:
- * «Actualizando análisis para Tomate…» con un indicador de carga.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-updating-analysis',

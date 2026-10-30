@@ -8,7 +8,6 @@ import { CATEGORY_UI, NEXT_ACTION_UI, PRIORITY_UI } from '../../shared/ai-labels
 import { HealthBadge } from '../../shared/health-badge';
 import { WhyFactors } from './why-factors';
 
-/** Full analysis from the timeline (read-only). */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-analysis-dialog',

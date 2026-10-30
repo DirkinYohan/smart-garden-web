@@ -53,7 +53,7 @@ describe('AuthService', () => {
     auth.login('admin', 'admin123').subscribe();
 
     expect(auth.mustChangePassword()).toBe(true);
-    // Nunca se guarda la contraseña
+
     expect(JSON.stringify(localStorage.getItem(SESSION_KEY))).not.toContain('admin123');
   });
 

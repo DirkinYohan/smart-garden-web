@@ -1,6 +1,5 @@
 import { ChartType, Plugin } from 'chart.js';
 
-/** Vertical line with a label at an x value (e.g. "Ahora", "Riego estimado"). */
 export interface VerticalMarker {
   x: number;
   label: string;
@@ -15,7 +14,6 @@ declare module 'chart.js' {
   }
 }
 
-/** Draws vertical markers on the x scale (no extra dependency needed). */
 export const verticalMarkersPlugin: Plugin = {
   id: 'sgMarkers',
   afterDatasetsDraw(chart, _args, options: { markers?: VerticalMarker[] }) {
@@ -24,7 +22,7 @@ export const verticalMarkersPlugin: Plugin = {
     if (!x || !markers.length) return;
     const { ctx, chartArea } = chart;
     ctx.save();
-    // Stagger labels vertically so close markers ("Ahora" / "Riego estimado") do not overlap.
+
     markers.forEach((m, i) => {
       const px = x.getPixelForValue(m.x);
       if (!Number.isFinite(px) || px < chartArea.left - 1 || px > chartArea.right + 1) return;
@@ -46,7 +44,6 @@ export const verticalMarkersPlugin: Plugin = {
   },
 };
 
-/** Big text in the middle of a doughnut ("83 %" + "en buen estado"). */
 export const centerTextPlugin: Plugin = {
   id: 'sgCenterText',
   afterDraw(chart, _args, options: { text?: string; sub?: string; color?: string; subColor?: string }) {

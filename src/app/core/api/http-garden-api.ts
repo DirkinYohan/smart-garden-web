@@ -36,7 +36,6 @@ import {
 import { ApiMappers } from './api-mappers';
 import { GardenApi, SILENT_ERRORS } from './garden-api';
 
-/** GardenApi backed by the api-gateway REST API. */
 @Injectable()
 export class HttpGardenApi extends GardenApi {
   private readonly http = inject(HttpClient);
@@ -129,7 +128,7 @@ export class HttpGardenApi extends GardenApi {
     return this.http
       .get<AiStatsDto>(`${this.base}/ai/stats`, {
         params: new HttpParams().set('days', days),
-        // The AI page shows its own error state for this section.
+
         context: new HttpContext().set(SILENT_ERRORS, true),
       })
       .pipe(map(ApiMappers.stats));

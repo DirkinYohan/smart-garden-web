@@ -10,7 +10,6 @@
       <mat-progress-bar mode="indeterminate" [attr.aria-label]="i18n.t('ctrl.saving')" class="saving" />
     }
 
-    <!-- Modo -->
     <mat-card appearance="outlined">
       <mat-card-header>
         <mat-card-title>{{ i18n.t('ctrl.modeTitle') }}</mat-card-title>
@@ -45,7 +44,7 @@
     </mat-card>
 
     <div class="two-cols">
-      <!-- Cultivo -->
+
       <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>{{ i18n.t('ctrl.cropTitle') }}</mat-card-title>
@@ -72,7 +71,6 @@
         </mat-card-content>
       </mat-card>
 
-      <!-- Umbrales -->
       <mat-card appearance="outlined">
         <mat-card-header>
           <mat-card-title>{{ i18n.t('ctrl.thresholdsTitle') }}</mat-card-title>
@@ -141,7 +139,6 @@
       </mat-card>
     </div>
 
-    <!-- Riego manual -->
     <mat-card appearance="outlined" [class.disabled-card]="!isManual()">
       <mat-card-header>
         <mat-icon mat-card-avatar aria-hidden="true">water_drop</mat-icon>
@@ -184,7 +181,6 @@
       }
     </mat-card>
 
-    <!-- Perfiles -->
     <mat-card appearance="outlined">
       <mat-card-header>
         <mat-card-title>{{ i18n.t('ctrl.profilesTitle') }}</mat-card-title>

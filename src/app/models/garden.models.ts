@@ -1,16 +1,7 @@
-/**
- * UI models. They follow the contracts of the frontend specification; the real api-gateway DTOs
- * (see api.models.ts) are translated in core/api/api-mappers.ts.
- */
-
 export type IrrigationMode = 'AUTO' | 'MANUAL' | 'AI';
 export type HistoryRange = '24h' | '7d' | '30d';
 export type RiskLevel = 'LOW' | 'MEDIUM' | 'HIGH';
 
-/**
- * Nivel de humedad calculado por el backend respecto al rango del cultivo activo.
- * VERY_DRY < min-10, DRY < min, OPTIMAL dentro del rango, WET hasta max+15, SATURATED por encima (o >= 95 %).
- */
 export type MoistureLevel = 'SENSOR_ERROR' | 'VERY_DRY' | 'DRY' | 'OPTIMAL' | 'WET' | 'SATURATED';
 export type AnalysisSource = 'GEMINI' | 'RULES';
 export type ConnectionState = 'connected' | 'connecting' | 'disconnected';
@@ -18,12 +9,11 @@ export type ConnectionState = 'connected' | 'connecting' | 'disconnected';
 export interface LoginResponse {
   token: string;
   expiresAt: string;
-  /** true cuando la contraseña es inicial: hay que cambiarla antes de usar la aplicación. */
+
   mustChangePassword: boolean;
   username: string;
 }
 
-/** GET /auth/me */
 export interface AuthUser {
   username: string;
   role: string;
@@ -31,19 +21,16 @@ export interface AuthUser {
   passwordChangedAt: string | null;
 }
 
-/** PUT /auth/password */
 export interface PasswordChange {
   currentPassword: string;
   newPassword: string;
 }
 
-/** Respuesta de PUT /auth/password: token nuevo (las demás sesiones quedan cerradas). */
 export interface PasswordChangedResponse {
   token: string;
   expiresAt: string;
 }
 
-/** GET /status and /topic/telemetry. `hasReading` is false when the device never reported. */
 export interface DeviceStatus {
   deviceId: string;
   moisture: number;
@@ -55,7 +42,7 @@ export interface DeviceStatus {
   maxMoisture: number;
   rainPause: boolean;
   deviceOnline: boolean;
-  /** Time of the reading (ISO-8601) or null. */
+
   timestamp: string | null;
   hasReading: boolean;
 }
@@ -86,11 +73,10 @@ export interface IrrigationConfig {
   rainPause: boolean;
   aiEnabled: boolean;
   updatedAt?: string | null;
-  /** 'USER' | 'AI' | 'SYSTEM' */
+
   updatedBy?: string;
 }
 
-/** PUT /config: partial update. */
 export type ConfigUpdate = Partial<Omit<IrrigationConfig, 'updatedAt' | 'updatedBy'>>;
 
 export interface CropProfile {
@@ -120,20 +106,20 @@ export interface Analysis {
   summary: string;
   recommendations: string[];
   applied?: boolean;
-  /** 'SCHEDULED' | 'MANUAL' */
+
   trigger?: string;
-  /** Code (see FallbackReason) when source = RULES. */
+
   fallbackReason?: string | null;
-  // --- v1.1 (null / empty for analyses created before) ---
+
   headline: string | null;
   healthStatus: HealthStatus | null;
   nextAction: NextAction | null;
   recommendationDetails: RecommendationDetail[];
   inputSnapshot: InputSnapshot | null;
   projection: Projection | null;
-  /** Technical detail of the fallback (not shown to end users). */
+
   fallbackDetail?: string | null;
-  /** v1.2: nivel de humedad con el que se redactó este análisis (null en análisis antiguos). */
+
   moistureLevel: MoistureLevel | null;
 }
 
@@ -171,7 +157,6 @@ export interface RecommendationDetail {
   action: SuggestedAction | null;
 }
 
-/** Data the analysis used ("¿Por qué la IA decidió esto?"). Nullable values were not available. */
 export interface InputSnapshot {
   currentMoisture: number | null;
   avgMoisture24h: number | null;
@@ -193,7 +178,7 @@ export interface InputSnapshot {
   sensorOk: boolean;
   rainPause: boolean | null;
   readingAgeMinutes: number | null;
-  /** v1.2: cultivo con el que se hizo el análisis (null en análisis antiguos). */
+
   cropId: number | null;
   moistureLevel: MoistureLevel | null;
 }
@@ -227,7 +212,6 @@ export interface DailyMoisture {
   pumpMinutes: number;
 }
 
-/** GET /ai/stats?days=7|30 */
 export interface AiStats {
   days: number;
   totalAnalyses: number;
@@ -255,13 +239,11 @@ export interface Weather {
   hourly: HourlyWeather[];
 }
 
-/** /topic/device-status */
 export interface DeviceStatusEvent {
   deviceOnline: boolean;
   timestamp: string;
 }
 
-/** Uniform error body of the api-gateway. */
 export interface ApiError {
   timestamp: string;
   status: number;

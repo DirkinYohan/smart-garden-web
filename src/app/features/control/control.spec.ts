@@ -83,10 +83,8 @@ describe('Control · umbrales por cultivo', () => {
 
     (component as unknown as { setCrop: (id: number) => void }).setCrop(3);
 
-    // Antes incluso de que el backend confirme
     expect([draftMin(), draftMax()]).toEqual([50, 80]);
 
-    // Y al confirmar, se anuncia el rango aplicado
     pendingUpdate.next(config({ cropId: 3, minMoisture: 50, maxMoisture: 80 }));
     fixture.detectChanges();
 

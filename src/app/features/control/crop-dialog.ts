@@ -12,7 +12,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { CropProfile, CropProfileInput } from '../../models/garden.models';
 
-/** Group validator: max - min >= 10. */
 export function thresholdGapValidator(group: AbstractControl): ValidationErrors | null {
   const min = group.get('minMoisture')?.value as number | null;
   const max = group.get('maxMoisture')?.value as number | null;
@@ -20,7 +19,6 @@ export function thresholdGapValidator(group: AbstractControl): ValidationErrors 
   return max - min >= 10 ? null : { gap: true };
 }
 
-/** Edits a crop profile; closes with the new values (CropProfileInput) or undefined. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-crop-dialog',

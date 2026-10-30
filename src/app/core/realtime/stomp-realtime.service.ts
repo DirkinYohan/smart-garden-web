@@ -19,10 +19,6 @@ import { ApiMappers } from '../api/api-mappers';
 import { AuthService } from '../auth/auth.service';
 import { RealtimeService } from './realtime.service';
 
-/**
- * STOMP over WebSocket with @stomp/rx-stomp. The JWT goes in the CONNECT headers and is re-read on
- * every reconnection; reconnects automatically every 5 s.
- */
 @Injectable()
 export class StompRealtimeService extends RealtimeService implements OnDestroy {
   private readonly auth = inject(AuthService);

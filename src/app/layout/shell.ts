@@ -21,15 +21,11 @@ import { LanguageToggle } from '../shared/language-toggle';
 
 interface NavItem {
   path: string;
-  /** Clave de traducción (el texto lo pone I18nService). */
+
   labelKey: string;
   icon: string;
 }
 
-/**
- * Authenticated layout: toolbar + side navigation on desktop, bottom navigation on mobile.
- * Starts the shared store (REST + WebSocket) and stops it on logout.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-shell',
@@ -47,7 +43,7 @@ interface NavItem {
     ConnectionIndicator,
     LanguageToggle,
   ],
-  // Chart.js is registered here (lazy chunk) so the login bundle stays small.
+
   providers: [provideCharts(withDefaultRegisterables())],
   templateUrl: './shell.html',
   styleUrl: './shell.scss',
@@ -74,7 +70,7 @@ export class Shell implements OnDestroy {
   ];
 
   constructor() {
-    // Sincroniza el estado de la contraseña (p. ej. si se restableció desde el servidor).
+
     this.auth.refresh().subscribe();
     this.store.start();
   }

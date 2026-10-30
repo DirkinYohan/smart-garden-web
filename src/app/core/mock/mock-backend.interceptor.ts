@@ -5,12 +5,6 @@ import { environment } from '../../../environments/environment';
 import { ApiError } from '../../models/garden.models';
 import { MockBackend, MockHttpError } from './mock-backend';
 
-
-
-/**
- * Answers api-gateway requests from MockBackend (environment.useMock). Registered last, so the
- * auth and error interceptors run as with the real backend.
- */
 export const mockBackendInterceptor: HttpInterceptorFn = (req, next) => {
   if (!environment.useMock || !req.url.startsWith(environment.apiUrl)) {
     return next(req);
@@ -83,7 +77,7 @@ function handle(backend: MockBackend, req: HttpRequest<unknown>, path: string): 
 }
 
 function respond(req: HttpRequest<unknown>, path: string, body: unknown): Observable<HttpResponse<unknown>> {
-  // An AI analysis takes a few seconds with the real backend.
+
   const latency = path === '/ai/analysis' && req.method === 'POST' ? 2500 : 250 + Math.random() * 250;
   return of(new HttpResponse({ status: 200, body, url: req.url })).pipe(delay(latency));
 }

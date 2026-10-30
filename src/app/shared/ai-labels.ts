@@ -1,9 +1,5 @@
 import { ActionType, HealthStatus, NextAction, Priority, RecommendationCategory } from '../models/garden.models';
 
-/**
- * Presentación de las etiquetas de la IA: icono + tono (color) y la CLAVE de traducción del texto.
- * El texto se resuelve con `I18nService.t(ui.labelKey)` para que cambie de idioma sin recargar.
- */
 export interface LabelUi {
   labelKey: string;
   icon: string;
@@ -38,7 +34,6 @@ export const PRIORITY_UI: Record<Priority, { labelKey: string; tone: Tone; order
   LOW: { labelKey: 'priority.LOW', tone: 'neutral', order: 2 },
 };
 
-/** Texto de confirmación de cada acción de un clic (claves de traducción). */
 export const ACTION_CONFIRM_KEY: Record<Exclude<ActionType, 'CHECK_SENSOR'>, string> = {
   APPLY_THRESHOLDS: 'action.confirm.APPLY_THRESHOLDS',
   ENABLE_AI_MODE: 'action.confirm.ENABLE_AI_MODE',

@@ -4,7 +4,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { I18nService } from '../core/i18n/i18n.service';
 
-/** Botón para cambiar entre español e inglés. Muestra el idioma activo resaltado. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-language-toggle',

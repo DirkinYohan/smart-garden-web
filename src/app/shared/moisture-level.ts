@@ -1,18 +1,14 @@
 import { MoistureLevel } from '../models/garden.models';
 
-/**
- * Los seis niveles de humedad y su presentación (texto + icono + color). Usan las mismas reglas que el backend
- * (`MoistureClassifier`), para que el chip, el medidor y el modo mock digan siempre lo mismo.
- */
 export interface MoistureLevelUi {
-  /** Texto en español (respaldo y pruebas); la interfaz usa `labelKey` con `I18nService`. */
+
   label: string;
-  /** Clave de traducción (`level.OPTIMAL`, …). */
+
   labelKey: string;
   icon: string;
-  /** Clase de `tone.scss`; el color nunca va solo: siempre con icono y texto. */
+
   tone: 'good' | 'warn' | 'bad' | 'water' | 'deep' | 'neutral';
-  /** Color del nivel como valor CSS (lo usa el medidor para el arco y el texto). */
+
   color: string;
 }
 
@@ -52,19 +48,15 @@ export const MOISTURE_LEVEL_UI: Record<MoistureLevel, MoistureLevelUi> = {
   },
 };
 
-/** Puntos por debajo del mínimo que separan "baja" de "muy seca" (igual que el backend). */
 export const VERY_DRY_MARGIN = 10;
 
-/** Puntos por encima del máximo que separan "alta" de "saturada" (igual que el backend). */
 export const SATURATED_MARGIN = 15;
 
-/** A partir de este porcentaje la tierra se considera saturada. */
 export const SATURATED_FLOOR = 95;
 
 export const DEFAULT_MIN = 30;
 export const DEFAULT_MAX = 70;
 
-/** Nivel de humedad para un valor y un rango, con las mismas fronteras que `MoistureClassifier` en Java. */
 export function classifyMoisture(
   moisture: number | null | undefined,
   min: number,

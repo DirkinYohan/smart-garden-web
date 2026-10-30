@@ -5,7 +5,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { Analysis } from '../../models/garden.models';
 import { HEALTH_UI } from '../../shared/ai-labels';
 
-/** H. Compact timeline of analyses; a click opens the full analysis. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-analysis-timeline',

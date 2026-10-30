@@ -90,7 +90,6 @@
   transition: color 0.3s ease;
 }
 
-/* Al cambiar de cultivo (o cuando la IA ajusta los umbrales) los sliders se deslizan hasta el rango nuevo. */
 .thresholds {
   :host ::ng-deep .mdc-slider__thumb {
     transition: left 320ms cubic-bezier(0.2, 0, 0, 1);
@@ -103,7 +102,6 @@
   }
 }
 
-/* "Rango recomendado para Tomate: 40–70 %" */
 .crop-range {
   display: flex;
   align-items: center;

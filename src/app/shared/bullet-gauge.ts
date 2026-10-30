@@ -1,9 +1,5 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-/**
- * Horizontal bullet chart 0–100 %: recommended range as a band, crop range as tick marks, current value as a
- * marker. Red / green / blue marker = below / in / above the range.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-bullet-gauge',

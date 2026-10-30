@@ -3,7 +3,6 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatDialogModule } from '@angular/material/dialog';
 import { MatIconModule } from '@angular/material/icon';
 
-/** Step-by-step help for the CHECK_SENSOR action. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-sensor-help-dialog',

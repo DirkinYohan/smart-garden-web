@@ -2,10 +2,6 @@ import { TestBed } from '@angular/core/testing';
 import { Analysis } from '../../models/garden.models';
 import { KpiRow } from './kpi-row';
 
-/**
- * La tarjeta "Humedad actual" (módulo de IA) debe mostrar el dato VIVO del sensor, no el que quedó congelado en el
- * último análisis, y avisar cuando el sensor deja de dar lecturas válidas (p. ej. al sacarlo del agua).
- */
 function analysisWith(moisture: number | null): Analysis {
   return {
     id: 'a1',

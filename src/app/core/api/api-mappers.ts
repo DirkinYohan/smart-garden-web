@@ -55,18 +55,16 @@ const CONFIDENCES: readonly Confidence[] = ['LOW', 'MEDIUM', 'HIGH'];
 const MOISTURE_LEVELS: readonly MoistureLevel[] = ['SENSOR_ERROR', 'VERY_DRY', 'DRY', 'OPTIMAL', 'WET', 'SATURATED'];
 const RISKS: readonly RiskLevel[] = ['LOW', 'MEDIUM', 'HIGH'];
 
-/** Unknown / missing enum values (older or newer backends) become null instead of breaking the UI. */
 function oneOf<T extends string>(value: string | null | undefined, allowed: readonly T[]): T | null {
   return value && (allowed as readonly string[]).includes(value) ? (value as T) : null;
 }
 
-/** Translates the api-gateway wire format into the UI models (and back for PUT /config). */
 export const ApiMappers = {
   login(dto: LoginResponseDto): LoginResponse {
     return {
       token: dto.token,
       expiresAt: dto.expiresAt,
-      // Un backend antiguo no manda el campo: se asume que no hay cambio obligatorio.
+
       mustChangePassword: dto.mustChangePassword === true,
       username: dto.username ?? '',
     };
@@ -105,7 +103,6 @@ export const ApiMappers = {
     return ApiMappers.reading(dto.reading, dto.deviceOnline);
   },
 
-  /** /topic/telemetry carries only the reading; receiving one means the device is online. */
   reading(r: TelemetryReadingDto, deviceOnline = true): DeviceStatus {
     return {
       deviceId: r.deviceId,

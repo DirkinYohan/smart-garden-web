@@ -50,10 +50,6 @@ export class Dashboard {
   protected readonly status = computed(() => this.store.status().value);
   protected readonly lastReading = computed(() => this.i18n.relativeTime(this.store.secondsSinceLastReading()));
 
-  /**
-   * Thresholds for the gauge: the configuration wins (/config + /topic/config), so changing the crop updates the
-   * range immediately; the live reading is only a fallback (it carries what the ESP32 is still using).
-   */
   protected readonly thresholds = computed(() => {
     const c = this.store.config().value;
     if (c) return { min: c.minMoisture, max: c.maxMoisture };
@@ -71,7 +67,7 @@ export class Dashboard {
   });
 
   protected readonly chartData = computed<ChartConfiguration<'line'>['data']>(() => {
-    this.theme.dark(); // re-read CSS colors when the theme changes
+    this.theme.dark();
     const samples = this.store.liveSamples();
     const { min, max } = this.thresholds();
     const labels = samples.map((s) =>

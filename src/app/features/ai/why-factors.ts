@@ -7,11 +7,10 @@ export interface Factor {
   icon: string;
   label: string;
   value: string;
-  /** Por qué influyó este factor (null = no resaltado). */
+
   influence: string | null;
 }
 
-/** Convierte la foto de datos de entrada en factores legibles, resaltando los que motivaron la decisión. */
 export function factorsFor(s: InputSnapshot, recommendedMin: number, i18n: I18nService): Factor[] {
   const t = (key: string, params?: Record<string, string | number>) => i18n.t(key, params);
   const pct = (v: number | null) => (v === null ? t('why.noData') : `${i18n.formatNumber(v, 0)} %`);
@@ -99,7 +98,6 @@ export function factorsFor(s: InputSnapshot, recommendedMin: number, i18n: I18nS
   ];
 }
 
-/** E. Lista de factores que la IA tuvo en cuenta. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-why-factors',

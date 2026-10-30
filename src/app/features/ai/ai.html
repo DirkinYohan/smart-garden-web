@@ -8,7 +8,7 @@
     <app-error-state [message]="i18n.t('ai.loadError')" (retry)="store.reload()" />
   } @else if (latest(); as a) {
     @if (updatingAnalysis()) {
-      <!-- El análisis es de otro cultivo: aviso en lugar del texto viejo -->
+
       <app-updating-analysis
         [cropName]="cropName()"
         [autoAnalysis]="autoAnalysis()"
@@ -16,7 +16,7 @@
         (analyze)="analyze()"
       />
     } @else {
-      <!-- A. Estado de tu huerta -->
+
       <app-ai-status-card
         [analysis]="a"
         [now]="nowMinute()"
@@ -28,7 +28,6 @@
       />
     }
 
-    <!-- B. Indicadores clave -->
     <app-ai-kpi-row
     [analysis]="a"
     [liveMoisture]="liveMoisture()"
@@ -37,7 +36,6 @@
     [now]="nowMinute()"
   />
 
-    <!-- C. Humedad: pasado y pronóstico -->
     <article class="card">
       <h2>{{ i18n.t('ai.whenTitle') }}</h2>
       <p class="subtitle">{{ i18n.t('ai.whenSubtitle') }}</p>
@@ -54,7 +52,6 @@
       }
     </article>
 
-    <!-- D. Recomendaciones -->
     <article class="card">
       <h2>{{ i18n.t('ai.recsTitle') }}</h2>
       @if (updatingAnalysis()) {
@@ -78,7 +75,6 @@
       }
     </article>
 
-    <!-- E. ¿Por qué la IA decidió esto? -->
     <mat-accordion>
       <mat-expansion-panel class="why">
         <mat-expansion-panel-header>
@@ -104,13 +100,12 @@
     </article>
   }
 
-  <!-- F. Tendencias -->
   <article class="card">
     <app-ai-trends [stats]="stats()" [days]="statsDays()" (daysChange)="statsDays.set($event)" (retry)="loadStats(statsDays())" />
   </article>
 
   <div class="two-cols">
-    <!-- G. Pronóstico de lluvia y temperatura -->
+
     <article class="card">
       <h2>{{ i18n.t('ai.rainTitle') }}</h2>
       <p class="subtitle">{{ i18n.t('ai.rainSubtitle') }}</p>
@@ -126,7 +121,6 @@
       }
     </article>
 
-    <!-- H. Historial de análisis -->
     <article class="card">
       <h2>{{ i18n.t('ai.historyTitle') }}</h2>
       @if (list().state === 'loading' && timeline().length === 0) {

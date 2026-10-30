@@ -15,7 +15,6 @@ import { EmptyState } from '../../shared/state-views';
 type XY = { x: number; y: number };
 const HOUR = 3600_000;
 
-/** Timestamps between min and max that fall on local hours ≡ offset (mod step): step 6 → 0:00, 6:00, 12:00… */
 export function localHourTicks(min: number, max: number, step: number, offset = 0): number[] {
   const start = new Date(min);
   start.setMinutes(0, 0, 0);
@@ -26,10 +25,6 @@ export function localHourTicks(min: number, max: number, step: number, offset = 
   return ticks;
 }
 
-/**
- * C. "¿Cuándo hay que regar?": last 24 h (solid) + 24 h projection (dashed), recommended band, hourly rain
- * probability bars (secondary axis), "Ahora" and "Riego estimado" markers, and a plain-language reading below.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ai-forecast-chart',
@@ -71,7 +66,6 @@ export class ForecastChart {
   private readonly theme = inject(ThemeService);
   protected readonly plugins = [verticalMarkersPlugin];
 
-  /** Compact layout on phones: legend at the bottom, no axis titles, fewer ticks. */
   private readonly narrow = toSignal(
     inject(BreakpointObserver)
       .observe('(max-width: 599px)')
@@ -208,9 +202,9 @@ export class ForecastChart {
           type: 'linear',
           min: now - 24 * HOUR,
           max: now + 24 * HOUR,
-          // the rain bars would turn on the bar-chart offset and squeeze the time axis
+
           offset: false,
-          // Ticks on local clock hours labelled "6:00 p. m. / ayer": every 6 h, only noon on phones.
+
           afterBuildTicks: (axis) => {
             const ticks = narrow ? localHourTicks(axis.min, axis.max, 24, 12) : localHourTicks(axis.min, axis.max, 6);
             axis.ticks = ticks.map((value) => ({ value }));
@@ -243,12 +237,10 @@ export class ForecastChart {
     };
   });
 
-  /** Minimum the ESP32 is using now (the projection crosses this one), else the recommended one. */
   private readonly activeMin = computed(
     () => this.analysis().inputSnapshot?.currentMin || this.analysis().recommendedMin,
   );
 
-  /** "Si no llueve, la humedad bajará del 45 % cerca de las 6:00 p. m." */
   protected readonly reading = computed(() => {
     const a = this.analysis();
     const p = a.projection;

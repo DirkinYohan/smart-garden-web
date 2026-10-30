@@ -1,6 +1,5 @@
 import { classifyMoisture, MOISTURE_LEVELS, MOISTURE_LEVEL_UI } from './moisture-level';
 
-/** Las mismas fronteras que el backend, con los casos del reporte (80 %, 86 % y 99 % no son "baja"). */
 describe('classifyMoisture', () => {
   const MIN = 45;
   const MAX = 75;

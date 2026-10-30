@@ -12,10 +12,6 @@ import { HealthBadge } from '../../shared/health-badge';
 
 const OUTDATED_MINUTES = 40;
 
-/**
- * A. "Estado de tu huerta": semáforo, titular, nivel de humedad, qué hace el sistema, fuente y antigüedad.
- * Si la humedad en vivo ya no corresponde al nivel del análisis, lo dice.
- */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ai-status-card',
@@ -94,7 +90,7 @@ export class StatusCard {
   readonly now = input.required<number>();
   readonly analyzing = input(false);
   readonly flash = input(false);
-  /** Humedad en vivo de /topic/telemetry (null si no hay lectura válida). */
+
   readonly liveMoisture = input<number | null>(null);
   readonly liveSensorOk = input(true);
   readonly analyze = output<void>();
@@ -110,7 +106,6 @@ export class StatusCard {
     () => this.now() - Date.parse(this.analysis().createdAt) > OUTDATED_MINUTES * 60_000,
   );
 
-  /** Nivel que tendría la humedad actual con el mismo rango que usó el análisis. */
   protected readonly liveLevel = computed(() => {
     const value = this.liveMoisture();
     if (value === null) return null;
@@ -120,7 +115,6 @@ export class StatusCard {
     return classifyMoisture(value, min, max, this.liveSensorOk());
   });
 
-  /** El texto del análisis ya no describe la humedad real (p. ej. dice "Baja" y ahora hay 85 %). */
   protected readonly liveChanged = computed(() => {
     const analysed = this.analysis().moistureLevel;
     const live = this.liveLevel();

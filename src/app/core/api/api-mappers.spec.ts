@@ -117,7 +117,7 @@ describe('ApiMappers (AI v1.1 contract)', () => {
     expect(a.headline).toBeNull();
     expect(a.healthStatus).toBeNull();
     expect(a.nextAction).toBeNull();
-    // entries without detail are dropped; title comes from the first words; unknown category/priority/action → defaults
+
     expect(a.recommendationDetails).toEqual([
       { title: 'Revisa la manguera del riego', detail: 'Revisa la manguera del riego hoy mismo', category: 'IRRIGATION', priority: 'MEDIUM', action: null },
     ]);

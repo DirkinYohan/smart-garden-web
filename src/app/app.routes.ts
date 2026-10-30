@@ -10,7 +10,7 @@ export const routes: Routes = [
     loadComponent: () => import('./features/auth/login/login').then((m) => m.Login),
   },
   {
-    // Única pantalla accesible cuando el cambio de contraseña es obligatorio (sin menú lateral).
+
     path: PASSWORD_CHANGE_PATH.slice(1),
     canActivate: [passwordChangeGuard],
     title: 'Cambiar contraseña · Smart Garden',

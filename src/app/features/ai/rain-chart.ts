@@ -6,7 +6,6 @@ import { ThemeService } from '../../core/theme.service';
 import { Weather } from '../../models/garden.models';
 import { cssVar, withAlpha } from '../../shared/labels';
 
-/** G. Hourly rain probability (bars) and temperature (line) for the next 12 h. */
 @Component({
   changeDetection: ChangeDetectionStrategy.OnPush,
   selector: 'app-ai-rain-chart',

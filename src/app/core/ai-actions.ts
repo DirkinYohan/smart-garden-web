@@ -10,10 +10,6 @@ import { GardenApi } from './api/garden-api';
 import { NotificationService } from './notification.service';
 import { GardenStore } from './state/garden-store';
 
-/**
- * PUT /config body for a one-click action of a recommendation, or null when the action does not change the
- * configuration (CHECK_SENSOR) or cannot be applied.
- */
 export function configUpdateForAction(type: ActionType, analysis: Analysis): ConfigUpdate | null {
   switch (type) {
     case 'APPLY_THRESHOLDS':
@@ -29,10 +25,6 @@ export function configUpdateForAction(type: ActionType, analysis: Analysis): Con
   }
 }
 
-/**
- * False when the current configuration already matches what the action would do (e.g. thresholds applied after
- * the analysis was produced), so the button is hidden. CHECK_SENSOR is always kept.
- */
 export function isActionStillUseful(type: ActionType, analysis: Analysis, config: IrrigationConfig | null): boolean {
   if (!config) return true;
   switch (type) {
@@ -59,7 +51,6 @@ const SUCCESS: Record<Exclude<ActionType, 'CHECK_SENSOR'>, string> = {
   ENABLE_RAIN_PAUSE: 'Pausa por lluvia activada',
 };
 
-/** Runs the action of a recommendation card: confirmation dialog → PUT /config → snackbar. */
 @Injectable({ providedIn: 'root' })
 export class AiActions {
   private readonly i18n = inject(I18nService);
@@ -69,7 +60,6 @@ export class AiActions {
   private readonly notify = inject(NotificationService);
   private readonly store = inject(GardenStore);
 
-  /** Emits true when the configuration was changed. */
   run(detail: RecommendationDetail, analysis: Analysis): Observable<boolean> {
     const type = detail.action?.type;
     if (!type) return of(false);

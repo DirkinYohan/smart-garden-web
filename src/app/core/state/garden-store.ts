@@ -10,7 +10,6 @@ import {
 import { GardenApi } from '../api/garden-api';
 import { RealtimeService } from '../realtime/realtime.service';
 
-/** Async slice: value + loading + error flag, for the loading / empty / error states of the UI. */
 export interface Slice<T> {
   value: T | null;
   loading: boolean;
@@ -29,10 +28,6 @@ function slice<T>(): Slice<T> {
   return { value: null, loading: false, error: false };
 }
 
-/**
- * Shared application state (signals): initial REST load + live updates from the STOMP topics.
- * Started by the shell after login and stopped on logout.
- */
 @Injectable({ providedIn: 'root' })
 export class GardenStore {
   private readonly api = inject(GardenApi);
@@ -45,11 +40,11 @@ export class GardenStore {
   readonly crops = signal<Slice<CropProfile[]>>(slice());
   readonly latestAnalysis = signal<Slice<Analysis>>(slice());
   readonly weather = signal<Slice<Weather>>(slice());
-  /** Readings of the last hours for the live mini chart. */
+
   readonly liveSamples = signal<LiveSample[]>([]);
-  /** Analyses received over WebSocket (newest first) so the AI page can prepend them. */
+
   readonly analysisFeed = signal<Analysis[]>([]);
-  /** Ticks every second to refresh relative times ("hace 12 s"). */
+
   readonly now = signal(Date.now());
 
   readonly connection = this.realtime.state;
@@ -59,13 +54,8 @@ export class GardenStore {
     return this.crops().value?.find((c) => c.id === cropId) ?? null;
   });
 
-  /** Nombre del cultivo vigente en la configuración (/config + /topic/config), nunca el del último análisis. */
   readonly currentCropName = computed(() => this.currentCrop()?.name ?? null);
 
-  /**
-   * True cuando el último análisis se hizo con otro cultivo que el actual. En ese caso la UI muestra
-   * "Actualizando análisis para <cultivo>…" en lugar del texto viejo.
-   */
   readonly analysisMatchesCrop = computed(() => {
     const analysis = this.latestAnalysis().value;
     const cropId = this.config().value?.cropId ?? null;
@@ -73,13 +63,12 @@ export class GardenStore {
     if (cropId === null) return true;
     const analysisCropId = analysis.inputSnapshot?.cropId ?? null;
     if (analysisCropId !== null) return analysisCropId === cropId;
-    // Análisis anterior a v1.2 (sin cropId): se compara por nombre.
+
     const name = this.currentCrop()?.name ?? null;
     const analysedName = analysis.inputSnapshot?.cropName ?? null;
     return !name || !analysedName || name === analysedName;
   });
 
-  /** Online per backend and with a recent reading (the backend timeout is also 30 s). */
   readonly deviceOnline = computed(() => {
     const s = this.status().value;
     if (!s?.deviceOnline || !s.timestamp) return false;
@@ -137,7 +126,6 @@ export class GardenStore {
     this.analysisFeed.set([]);
   }
 
-  /** (Re)loads every slice from the REST API. */
   reload(): void {
     this.load(this.status, this.api.getStatus());
     this.load(this.config, this.api.getConfig());
@@ -160,7 +148,6 @@ export class GardenStore {
     this.load(this.weather, this.api.getWeather());
   }
 
-  /** Applies a config returned by PUT /config without waiting for the WebSocket echo. */
   setConfig(config: IrrigationConfig): void {
     this.config.set({ value: config, loading: false, error: false });
   }

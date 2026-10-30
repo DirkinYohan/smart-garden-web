@@ -26,16 +26,16 @@ registerLocaleData(localeEsCo, 'es-CO');
 export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
-  // Zoneless explícito: la detección de cambios va por señales.
+
   provideZonelessChangeDetection(),
     provideRouter(routes, withComponentInputBinding()),
-    // The mock interceptor goes last so auth + error handling behave as with the real backend.
+
     provideHttpClient(withInterceptors([authInterceptor, errorInterceptor, mockBackendInterceptor])),
-    // El idioma por defecto de las tuberías (date/number) sigue al de la aplicación.
+
     { provide: LOCALE_ID, useFactory: () => (typeof localStorage !== 'undefined' && localStorage.getItem('smart-garden.lang') === 'en') ? 'en-US' : 'es-CO' },
     { provide: GardenApi, useClass: HttpGardenApi },
     { provide: RealtimeService, useClass: environment.useMock ? MockRealtimeService : StompRealtimeService },
-    // index.html loads the "Material Symbols Outlined" font.
+
     { provide: MAT_ICON_DEFAULT_OPTIONS, useValue: { fontSet: 'material-symbols-outlined' } },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { horizontalPosition: 'center', verticalPosition: 'bottom' } },
   ],

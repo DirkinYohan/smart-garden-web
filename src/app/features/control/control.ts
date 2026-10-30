@@ -66,23 +66,19 @@ export class Control {
   protected readonly crops = computed(() => this.store.crops().value ?? []);
   protected readonly saving = signal(false);
 
-  // Threshold sliders: local draft synced from the config until the user edits it.
   protected readonly draftMin = signal(30);
   protected readonly draftMax = signal(70);
   protected readonly thresholdsDirty = signal(false);
-  /** Brief highlight after the crop (or the AI) moves the range. */
+
   protected readonly rangePulse = signal(false);
   protected readonly gapInvalid = computed(() => this.draftMax() - this.draftMin() < MIN_GAP);
   protected readonly isAi = computed(() => this.config()?.mode === 'AI');
   protected readonly isManual = computed(() => this.config()?.mode === 'MANUAL');
 
-  /** Los umbrales solo se editan en modo Automático: en IA los fija la IA y en Manual no aplican. */
   protected readonly canEditThresholds = computed(() => !this.isAi() && !this.isManual());
 
-  /** La pausa por lluvia aplica en Automático e IA; en Manual el riego lo ordena el usuario. */
   protected readonly canToggleRainPause = computed(() => !this.isManual());
 
-  /** "Rango recomendado para Tomate: 40–70 %" del cultivo seleccionado en Control. */
   protected readonly cropRangeHint = computed(() => {
     const crop = this.cropById(this.config()?.cropId);
     return crop
@@ -90,7 +86,6 @@ export class Control {
       : null;
   });
 
-  // Manual irrigation
   protected readonly duration = signal(30);
   private readonly wateringUntil = signal<number | null>(null);
   protected readonly pumpBusy = signal(false);
@@ -108,8 +103,7 @@ export class Control {
   private lastConfig: { min: number; max: number; updatedBy?: string; cropId: number | null } | null = null;
 
   constructor() {
-    // The sliders follow the confirmed config. An adjustment made by the AI always wins, even if the user had
-    // unsaved changes, and is announced with a snackbar.
+
     effect(() => {
       const c = this.config();
       if (!c) return;
@@ -127,7 +121,7 @@ export class Control {
       }
       if (previous && previous.cropId !== c.cropId) untracked(() => this.pulseRange());
     });
-    // Countdown ends: forget it once the time is over.
+
     effect(() => {
       if (this.wateringUntil() !== null && this.remaining() === 0) {
         untracked(() => this.wateringUntil.set(null));
@@ -144,7 +138,6 @@ export class Control {
     this.update({ mode }, this.i18n.t('ctrl.snack.mode', { mode: this.i18n.modeLabel(mode) }));
   }
 
-  /** Changing crop moves the sliders to the new range immediately (the backend applies it in every mode). */
   protected setCrop(cropId: number): void {
     const crop = this.cropById(cropId);
     if (crop) {
@@ -259,7 +252,7 @@ export class Control {
         after?.();
         this.notify.success(successMessage);
       },
-      // The error interceptor shows the message; the UI keeps the last confirmed config.
+
       error: () => {
         this.saving.set(false);
         this.store.setConfig({ ...this.config()! });

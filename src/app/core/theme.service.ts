@@ -2,7 +2,6 @@ import { DOCUMENT, Injectable, effect, inject, signal } from '@angular/core';
 
 const THEME_KEY = 'smart-garden.theme';
 
-/** Light / dark mode toggle (persisted). Material 3 tokens follow `color-scheme`. */
 @Injectable({ providedIn: 'root' })
 export class ThemeService {
   private readonly document = inject(DOCUMENT);
@@ -15,7 +14,7 @@ export class ThemeService {
       try {
         localStorage.setItem(THEME_KEY, dark ? 'dark' : 'light');
       } catch {
-        // ignore unavailable storage
+
       }
     });
   }
@@ -29,7 +28,7 @@ export class ThemeService {
       const saved = localStorage.getItem(THEME_KEY);
       if (saved) return saved === 'dark';
     } catch {
-      // ignore unavailable storage
+
     }
     return typeof matchMedia === 'function' && matchMedia('(prefers-color-scheme: dark)').matches;
   }
