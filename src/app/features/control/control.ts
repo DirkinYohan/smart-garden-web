@@ -76,6 +76,9 @@ export class Control {
   protected readonly isAi = computed(() => this.config()?.mode === 'AI');
   protected readonly isManual = computed(() => this.config()?.mode === 'MANUAL');
 
+  /** Los umbrales solo se editan en modo Automático: en IA los fija la IA y en Manual no aplican. */
+  protected readonly canEditThresholds = computed(() => !this.isAi() && !this.isManual());
+
   /** "Rango recomendado para Tomate: 40–70 %" del cultivo seleccionado en Control. */
   protected readonly cropRangeHint = computed(() => {
     const crop = this.cropById(this.config()?.cropId);

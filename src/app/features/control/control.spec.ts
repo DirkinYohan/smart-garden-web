@@ -108,6 +108,19 @@ describe('Control · umbrales por cultivo', () => {
     expect(notify.info).toHaveBeenCalledWith('La IA ajustó los umbrales a 42–68 %');
   });
 
+  it('locks the sliders in MANUAL mode with an explanatory note', () => {
+    store.setConfig(config({ mode: 'MANUAL' }));
+    fixture.detectChanges();
+
+    expect(fixture.nativeElement.textContent).toContain(
+      'En modo Manual los umbrales no se editan: cámbialos en modo Automático',
+    );
+    const thumb = fixture.nativeElement.querySelector('mat-slider input') as HTMLInputElement;
+    expect(thumb.disabled).toBe(true);
+    const save = fixture.nativeElement.querySelector('mat-card-actions button[mat-flat-button]');
+    expect((save as HTMLButtonElement).disabled).toBe(true);
+  });
+
   it('locks the sliders in AI mode with an explanatory note', () => {
     store.setConfig(config({ mode: 'AI' }));
     fixture.detectChanges();

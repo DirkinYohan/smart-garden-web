@@ -81,7 +81,7 @@
           <p class="range-value" aria-live="polite" [class.pulse]="rangePulse()">
             <span class="text-dry">{{ draftMin() }} %</span> – <span class="text-wet">{{ draftMax() }} %</span>
           </p>
-          <mat-slider min="0" max="100" step="1" discrete class="full" [disabled]="isAi() || saving()">
+          <mat-slider min="0" max="100" step="1" discrete class="full" [disabled]="!canEditThresholds() || saving()">
             <input
               matSliderStartThumb
               [attr.aria-label]="i18n.t('ctrl.minAria')"
@@ -104,6 +104,10 @@
             <p class="note">
               <mat-icon aria-hidden="true">psychology</mat-icon> {{ i18n.t('ctrl.aiAdjusts') }}
             </p>
+          } @else if (isManual()) {
+            <p class="note">
+              <mat-icon aria-hidden="true">lock</mat-icon> {{ i18n.t('ctrl.manualThresholdsLocked') }}
+            </p>
           } @else if (gapInvalid()) {
             <p class="error" role="alert">{{ i18n.t('ctrl.gapError') }}</p>
           }
@@ -112,14 +116,14 @@
           </mat-slide-toggle>
         </mat-card-content>
         <mat-card-actions align="end">
-          <button mat-button type="button" (click)="resetThresholds()" [disabled]="!thresholdsDirty() || saving()">
+          <button mat-button type="button" (click)="resetThresholds()" [disabled]="!canEditThresholds() || !thresholdsDirty() || saving()">
             {{ i18n.t('common.discard') }}
           </button>
           <button
             mat-flat-button
             type="button"
             (click)="saveThresholds()"
-            [disabled]="isAi() || !thresholdsDirty() || gapInvalid() || saving()"
+            [disabled]="!canEditThresholds() || !thresholdsDirty() || gapInvalid() || saving()"
           >
             {{ i18n.t('ctrl.saveThresholds') }}
           </button>
